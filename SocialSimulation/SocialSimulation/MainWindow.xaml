@@ -5,8 +5,57 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocialSimulation"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        d:DataContext="{d:DesignInstance {x:Type local:MainViewModel}}"
+        Title="MainWindow" Height="450" Width="800" MouseMove="MainWindow_OnMouseMove">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <ItemsControl ItemsSource="{Binding Entities}"  Grid.Column="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas x:Name="surfaceRoot" Background="LightGray" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                            Height="{Binding SurfaceHeight}" 
+                            Width="{Binding SurfaceWidth}"
+                            IsItemsHost="True"
+                    ></Canvas>
+                </ItemsPanelTemplate>
+                
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="{x:Type ContentPresenter}">
+                    <Setter Property="Canvas.Top" Value="{Binding Position.Y}"></Setter>
+                    <Setter Property="Canvas.Left" Value="{Binding Position.X}"></Setter>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Ellipse Width="10" Height="10" Fill="Black"></Ellipse>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <StackPanel Grid.Column="0">
+            <UniformGrid Columns="2" Margin="2">
+                <TextBlock Text="SurfaceWidth Height" Margin="2"/>
+                <TextBox Margin="2" Text="{Binding SurfaceHeight,UpdateSourceTrigger=PropertyChanged}" />
+            </UniformGrid>
+            <UniformGrid Columns="2" Margin="2">
+                <TextBlock Text="SurfaceWidth Width" Margin="2"/>
+                <TextBox Margin="2" Text="{Binding SurfaceWidth, UpdateSourceTrigger=PropertyChanged}"/>
+            </UniformGrid>
+            <UniformGrid Columns="2" Margin="2">
+                <TextBlock Text="Units number" Margin="2"/>
+                <TextBox Margin="2" Text="{Binding UnitsNumber}"/>
+            </UniformGrid>
+            <!--<Button Command="{Binding SeedCommand}" Margin="2" Content="Seed"/>
+            <TextBlock Text="{Binding RandomData}" Margin="2"></TextBlock>-->
+            <Slider Minimum="0" Maximum="10" Value="{Binding Speed, Delay=1000}" TickFrequency="0.1" TickPlacement="Both" IsSnapToTickEnabled="True"></Slider>
+            <Button Command="{Binding GenerateCommand}" Margin="2" Content="Generate"/>
+            <Button Command="{Binding StartMoveCommand}" Margin="2" Content="Start move"/>
+            <Button Command="{Binding StopMoveCommand}" Margin="2" Content="Stop move"/>
+
+        </StackPanel>
     </Grid>
 </Window>
