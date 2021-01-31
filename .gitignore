@@ -1,0 +1,5 @@
+﻿*.suo
+SocialSimulation/SocialSimulation/obj/Debug/App.g.i.cs
+*.g.i.cs
+SocialSimulation/SocialSimulation/obj
+.vs
