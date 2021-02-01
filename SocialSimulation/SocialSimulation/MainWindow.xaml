@@ -51,7 +51,7 @@
             </UniformGrid>
             <!--<Button Command="{Binding SeedCommand}" Margin="2" Content="Seed"/>
             <TextBlock Text="{Binding RandomData}" Margin="2"></TextBlock>-->
-            <Slider Minimum="0" Maximum="10" Value="{Binding Speed, Delay=1000}" TickFrequency="0.1" TickPlacement="Both" IsSnapToTickEnabled="True"></Slider>
+            <Slider Minimum="0" Maximum="2" Value="{Binding Speed, Delay=1000}" TickFrequency="0.1" TickPlacement="Both" IsSnapToTickEnabled="True"></Slider>
             <Button Command="{Binding GenerateCommand}" Margin="2" Content="Generate"/>
             <Button Command="{Binding StartMoveCommand}" Margin="2" Content="Start move"/>
             <Button Command="{Binding StopMoveCommand}" Margin="2" Content="Stop move"/>

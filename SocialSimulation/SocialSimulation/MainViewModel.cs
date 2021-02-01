@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,39 +8,17 @@ namespace SocialSimulation
 {
     public class MainViewModel : NotifierBase
     {
+        private List<Entity> _entities;
+        private Timer _moveTimer;
+        private Random _rnd;
+        private double _speed;
+        private bool _stopped;
+        private int _surfaceHeight;
         private int _surfaceWidth;
         private int _unitsNumber;
-        private int _surfaceHeight;
-        private Random _rnd;
-        private List<Entity> _entities;
-        private Random xRnd;
-        private Random yRnd;
-        private Timer _moveTimer;
-
-        public List<Entity> Entities
-        {
-            get => _entities;
-            private set { _entities = value; OnPropertyChanged(); }
-        }
-
-        public double Speed
-        {
-            get => _speed;
-            set
-            {
-                _speed = value; OnPropertyChanged();
-                ChangeSpeed();
-            }
-        }
-
-        private int _baseFrameRate = 16;
-        private void ChangeSpeed()
-        {
-            if (_moveTimer != null)
-            {
-                _moveTimer.Change(0, (int)(_baseFrameRate / _speed));
-            }
-        }
+        private Random _xRnd;
+        private Random _yRnd;
+        private int entitySize = 10;
 
         public MainViewModel()
         {
@@ -54,109 +31,36 @@ namespace SocialSimulation
             Entities = new List<Entity>();
             Speed = 1;
             GenerateRng();
-
         }
 
-
-        private void ExecuteStopMove(object o)
+        public List<Entity> Entities
         {
-            _moveTimer?.Dispose();
-            _moveTimer = null;
-            _stoped = true;
-        }
-
-        public RelayCommand StopMoveCommand { get; set; }
-
-        private void ExecuteStartMove(object o)
-        {
-            _stoped = false;
-            _moveTimer = new Timer(OnMove, null, 1000, 16);
-        }
-
-        private void OnMove(object state)
-        {
-            if(_stoped)
-                return;
-
-            foreach (var entity in Entities)
-            {
-                switch (entity.StartDirection)
-                {
-                    case StartDirection.Left:
-                        entity.Position = new Point(entity.Position.X - 1, entity.Position.Y);
-                        if (entity.Position.X <= 0)
-                        {
-                            entity.StartDirection = StartDirection.Right;
-                        }
-                        break;
-                    case StartDirection.Top:
-                        entity.Position = new Point(entity.Position.X, entity.Position.Y - 1);
-                        if (entity.Position.Y <= 0)
-                        {
-                            entity.StartDirection = StartDirection.Bottom;
-                        }
-                        break;
-                    case StartDirection.Right:
-                        entity.Position = new Point(entity.Position.X + 1, entity.Position.Y);
-                        if (entity.Position.X >= SurfaceWidth - entitySize)
-                        {
-                            entity.StartDirection = StartDirection.Left;
-                        }
-                        break;
-                    case StartDirection.Bottom:
-                        entity.Position = new Point(entity.Position.X, entity.Position.Y + 1);
-                        if (entity.Position.Y >= SurfaceHeight - entitySize)
-                        {
-                            entity.StartDirection = StartDirection.Top;
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-            }
-        }
-        int entitySize = 10;
-        private double _speed;
-        private bool _stoped;
-        public RelayCommand StartMoveCommand { get; set; }
-
-        private void GenerateRng()
-        {
-            _rnd = new Random(DateTime.Now.Millisecond);
-            xRnd = new Random(DateTime.Now.Second);
-            yRnd = new Random(DateTime.Now.Millisecond + DateTime.Now.Day);
-        }
-
-        private async void ExecuteGenerate(object o)
-        {
-            await Task.Run(() =>
-            {
-                Entities.Clear();
-                var ets = new List<Entity>();
-                for (int i = 0; i < UnitsNumber; i++)
-                {
-
-                    var e = new Entity() { Id = i + 1 };
-
-                    var x = xRnd.Next(entitySize, SurfaceWidth - entitySize) - entitySize / 2;
-
-                    var y = yRnd.Next(entitySize, SurfaceHeight - entitySize) - entitySize / 2;
-
-                    e.StartDirection = (StartDirection)_rnd.Next(0, 4);
-                    e.Position = new Point(x, y);
-                    ets.Add(e);
-
-
-                }
-
-                Entities = ets;
-            });
-
-
+            get => _entities;
+            private set { _entities = value; OnPropertyChanged(); }
         }
 
         public RelayCommand GenerateCommand { get; set; }
+
+        public double Speed
+        {
+            get => _speed;
+            set
+            {
+                _speed = value; OnPropertyChanged();
+                ChangeSpeed();
+            }
+        }
+
+        public RelayCommand StartMoveCommand { get; set; }
+
+        public RelayCommand StopMoveCommand { get; set; }
+
+        public int SurfaceHeight
+        {
+            get => _surfaceHeight;
+
+            set { _surfaceHeight = value; OnPropertyChanged(); }
+        }
 
         public int SurfaceWidth
         {
@@ -170,12 +74,102 @@ namespace SocialSimulation
             set { _unitsNumber = value; OnPropertyChanged(); }
         }
 
-        public int SurfaceHeight
+        private void ChangeSpeed()
         {
-            get => _surfaceHeight;
-
-            set { _surfaceHeight = value; OnPropertyChanged(); }
+            foreach (var entity in Entities)
+            {
+                entity.Speed = _speed;
+            }
         }
 
+        private async void ExecuteGenerate(object o)
+        {
+            await Task.Run(() =>
+            {
+                Entities.Clear();
+                var ets = new List<Entity>();
+                for (int i = 0; i < UnitsNumber; i++)
+                {
+                    var e = new Entity() { Id = i + 1, Speed = Speed };
+
+                    var x = _xRnd.Next(entitySize, SurfaceWidth - entitySize) - entitySize / 2;
+
+                    var y = _yRnd.Next(entitySize, SurfaceHeight - entitySize) - entitySize / 2;
+
+                    e.StartDirection = (StartDirection)_rnd.Next(0, 4);
+                    e.Position = new Point(x, y);
+                    ets.Add(e);
+                }
+
+                Entities = ets;
+            });
+        }
+
+        private void ExecuteStartMove(object o)
+        {
+            _stopped = false;
+            _moveTimer = new Timer(OnMove, null, 1000, 16);
+        }
+
+        private void ExecuteStopMove(object o)
+        {
+            _moveTimer?.Dispose();
+            _moveTimer = null;
+            _stopped = true;
+        }
+
+        private void GenerateRng()
+        {
+            _rnd = new Random(DateTime.Now.Millisecond);
+            _xRnd = new Random(DateTime.Now.Second);
+            _yRnd = new Random(DateTime.Now.Millisecond + DateTime.Now.Day);
+        }
+
+        private void OnMove(object state)
+        {
+            if (_stopped)
+                return;
+
+            foreach (var entity in Entities)
+            {
+                switch (entity.StartDirection)
+                {
+                    case StartDirection.Left:
+                        entity.Position = new Point(entity.Position.X - entity.Speed, entity.Position.Y);
+                        if (entity.Position.X <= 0)
+                        {
+                            entity.StartDirection = StartDirection.Right;
+                        }
+                        break;
+
+                    case StartDirection.Top:
+                        entity.Position = new Point(entity.Position.X, entity.Position.Y - entity.Speed);
+                        if (entity.Position.Y <= 0)
+                        {
+                            entity.StartDirection = StartDirection.Bottom;
+                        }
+                        break;
+
+                    case StartDirection.Right:
+                        entity.Position = new Point(entity.Position.X + entity.Speed, entity.Position.Y);
+                        if (entity.Position.X >= SurfaceWidth - entitySize)
+                        {
+                            entity.StartDirection = StartDirection.Left;
+                        }
+                        break;
+
+                    case StartDirection.Bottom:
+                        entity.Position = new Point(entity.Position.X, entity.Position.Y + entity.Speed);
+                        if (entity.Position.Y >= SurfaceHeight - entitySize)
+                        {
+                            entity.StartDirection = StartDirection.Top;
+                        }
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
     }
 }

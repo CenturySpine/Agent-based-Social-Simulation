@@ -15,8 +15,7 @@ namespace SocialSimulation
         }
 
         public StartDirection StartDirection { get; set; }
-
-
+        public double Speed { get; set; }
     }
 
     public enum StartDirection
