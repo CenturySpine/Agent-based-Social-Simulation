@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8,30 +9,59 @@ namespace SocialSimulation
 {
     public class MainViewModel : NotifierBase
     {
+        public GlobalSimulationParameters SimulationParams { get; }
+        private readonly MovementService _movement;
         private List<Entity> _entities;
         private Timer _moveTimer;
         private Random _rnd;
-        private double _speed;
+        
         private bool _stopped;
-        private int _surfaceHeight;
-        private int _surfaceWidth;
-        private int _unitsNumber;
+
         private Random _xRnd;
         private Random _yRnd;
-        private int entitySize = 10;
 
-        public MainViewModel()
+        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement)
         {
-            SurfaceHeight = 100;
-            SurfaceWidth = 100;
-            UnitsNumber = 10;
+            SimulationParams = simulationParams;
+            _movement = movement;
+            SimulationParams.PropertyChanged+=SimulationParamsOnPropertyChanged;
+
             GenerateCommand = new RelayCommand(ExecuteGenerate);
             StartMoveCommand = new RelayCommand(ExecuteStartMove);
             StopMoveCommand = new RelayCommand(ExecuteStopMove);
+
             Entities = new List<Entity>();
-            Speed = 1;
+
+
             GenerateRng();
         }
+
+        private void SimulationParamsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(GlobalSimulationParameters.Speed))
+                ChangeSpeed();
+
+            if (e.PropertyName == nameof(GlobalSimulationParameters.Determination))
+                ChangeDetermination();
+
+            if (e.PropertyName == nameof(GlobalSimulationParameters.Audacity))
+                ChangeAudacity();
+        }
+
+
+        private void ChangeDetermination()
+        {
+
+            lock (_entitiesLock)
+            {
+                foreach (var entity in Entities)
+                {
+                    entity.Determination = SimulationParams.Determination;
+                }
+            }
+        }
+
+
 
         public List<Entity> Entities
         {
@@ -39,46 +69,34 @@ namespace SocialSimulation
             private set { _entities = value; OnPropertyChanged(); }
         }
 
-        public RelayCommand GenerateCommand { get; set; }
+        public RelayCommand GenerateCommand { get; }
 
-        public double Speed
+
+
+        public RelayCommand StartMoveCommand { get; }
+
+        public RelayCommand StopMoveCommand { get; }
+      
+
+        private void ChangeAudacity()
         {
-            get => _speed;
-            set
+            lock (_entitiesLock)
             {
-                _speed = value; OnPropertyChanged();
-                ChangeSpeed();
+                foreach (var entity in Entities)
+                {
+                    entity.Audacity = SimulationParams.Audacity;
+                }
             }
-        }
-
-        public RelayCommand StartMoveCommand { get; set; }
-
-        public RelayCommand StopMoveCommand { get; set; }
-
-        public int SurfaceHeight
-        {
-            get => _surfaceHeight;
-
-            set { _surfaceHeight = value; OnPropertyChanged(); }
-        }
-
-        public int SurfaceWidth
-        {
-            get => _surfaceWidth;
-            set { _surfaceWidth = value; OnPropertyChanged(); }
-        }
-
-        public int UnitsNumber
-        {
-            get => _unitsNumber;
-            set { _unitsNumber = value; OnPropertyChanged(); }
         }
 
         private void ChangeSpeed()
         {
-            foreach (var entity in Entities)
+            lock (_entitiesLock)
             {
-                entity.Speed = _speed;
+                foreach (var entity in Entities)
+                {
+                    entity.Speed = SimulationParams.Speed;
+                }
             }
         }
 
@@ -86,29 +104,32 @@ namespace SocialSimulation
         {
             await Task.Run(() =>
             {
-                Entities.Clear();
-                var ets = new List<Entity>();
-                for (int i = 0; i < UnitsNumber; i++)
+                lock (_entitiesLock)
                 {
-                    var e = new Entity() { Id = i + 1, Speed = Speed };
+                    Entities.Clear();
+                    var ets = new List<Entity>();
+                    for (int i = 0; i < SimulationParams.UnitsNumber; i++)
+                    {
+                        var e = new Entity() { Id = i + 1, Speed = SimulationParams.Speed, Audacity = SimulationParams.Audacity, Determination = SimulationParams.Determination };
 
-                    var x = _xRnd.Next(entitySize, SurfaceWidth - entitySize) - entitySize / 2;
+                        var x = _xRnd.Next(SimulationParams.entitySize, SimulationParams.SurfaceWidth - SimulationParams.entitySize) - SimulationParams.entitySize / 2;
 
-                    var y = _yRnd.Next(entitySize, SurfaceHeight - entitySize) - entitySize / 2;
+                        var y = _yRnd.Next(SimulationParams.entitySize, SimulationParams.SurfaceHeight - SimulationParams.entitySize) - SimulationParams.entitySize / 2;
 
-                    e.StartDirection = (StartDirection)_rnd.Next(0, 4);
-                    e.Position = new Point(x, y);
-                    ets.Add(e);
+                        e.Direction = (StartDirection)_rnd.Next(0, 4);
+                        e.Position = new Point(x, y);
+                        ets.Add(e);
+                    }
+
+                    Entities = ets;
                 }
-
-                Entities = ets;
             });
         }
 
         private void ExecuteStartMove(object o)
         {
             _stopped = false;
-            _moveTimer = new Timer(OnMove, null, 1000, 16);
+            _moveTimer = new Timer(OnUpdateEntities, null, 1000, 16);
         }
 
         private void ExecuteStopMove(object o)
@@ -125,49 +146,21 @@ namespace SocialSimulation
             _yRnd = new Random(DateTime.Now.Millisecond + DateTime.Now.Day);
         }
 
-        private void OnMove(object state)
+        private readonly object _entitiesLock = new object();
+        
+
+        private void OnUpdateEntities(object state)
         {
             if (_stopped)
                 return;
 
-            foreach (var entity in Entities)
+            lock (_entitiesLock)
             {
-                switch (entity.StartDirection)
+                foreach (var entity in Entities)
                 {
-                    case StartDirection.Left:
-                        entity.Position = new Point(entity.Position.X - entity.Speed, entity.Position.Y);
-                        if (entity.Position.X <= 0)
-                        {
-                            entity.StartDirection = StartDirection.Right;
-                        }
-                        break;
 
-                    case StartDirection.Top:
-                        entity.Position = new Point(entity.Position.X, entity.Position.Y - entity.Speed);
-                        if (entity.Position.Y <= 0)
-                        {
-                            entity.StartDirection = StartDirection.Bottom;
-                        }
-                        break;
+                    _movement.Update(entity);
 
-                    case StartDirection.Right:
-                        entity.Position = new Point(entity.Position.X + entity.Speed, entity.Position.Y);
-                        if (entity.Position.X >= SurfaceWidth - entitySize)
-                        {
-                            entity.StartDirection = StartDirection.Left;
-                        }
-                        break;
-
-                    case StartDirection.Bottom:
-                        entity.Position = new Point(entity.Position.X, entity.Position.Y + entity.Speed);
-                        if (entity.Position.Y >= SurfaceHeight - entitySize)
-                        {
-                            entity.StartDirection = StartDirection.Top;
-                        }
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
