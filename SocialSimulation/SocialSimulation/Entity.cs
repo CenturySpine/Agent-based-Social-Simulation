@@ -4,6 +4,10 @@ namespace SocialSimulation
 {
     public class Entity : NotifierBase
     {
+        public Entity()
+        {
+            Goal = new Goal();
+        }
         private Point _position;
         public int Id { get; set; }
         public int Initiative { get; set; }
@@ -21,6 +25,19 @@ namespace SocialSimulation
         public double Audacity { get; set; }
 
         public double Determination { get; set; }
-        public int Continuation { get; set; }
+        public double Continuation { get; set; }
+
+        public Goal Goal { get; set; }
+    }
+
+    public class Goal : NotifierBase
+    {
+        private Point _goalPosition;
+
+        public Point GoalPosition
+        {
+            get => _goalPosition;
+            set { _goalPosition = value; OnPropertyChanged(); }
+        }
     }
 }

@@ -9,88 +9,86 @@
         Title="MainWindow" Height="450" Width="800" MouseMove="MainWindow_OnMouseMove">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition Width="0.3*" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <ItemsControl ItemsSource="{Binding Entities}"  Grid.Column="1">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas Background="LightGray" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                            Height="{Binding SimulationParams.SurfaceHeight}" 
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="0.3*"/>
+            </Grid.RowDefinitions>
+            <ItemsControl ItemsSource="{Binding Entities}"  >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas Background="LightGray" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp"
+                            Height="{Binding SimulationParams.SurfaceHeight}"
                             Width="{Binding SimulationParams.SurfaceWidth}"
                             IsItemsHost="True"
                     ></Canvas>
-                </ItemsPanelTemplate>
-
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="{x:Type ContentPresenter}">
-                    <Setter Property="Canvas.Top" Value="{Binding Position.Y}"></Setter>
-                    <Setter Property="Canvas.Left" Value="{Binding Position.X}"></Setter>
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Ellipse Width="10" Height="10" Fill="Black"></Ellipse>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type ContentPresenter}">
+                        <Setter Property="Canvas.Top" Value="{Binding Position.Y}"></Setter>
+                        <Setter Property="Canvas.Left" Value="{Binding Position.X}"></Setter>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="10" Height="10" Fill="Black"></Ellipse>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ListBox Grid.Row="1" ItemsSource="{Binding Logs}" Margin="2"/>
+        </Grid>
         <StackPanel Grid.Column="0">
             <StackPanel>
                 <UniformGrid Columns="2" Margin="2">
-                    <TextBlock Text="SurfaceWidth Height" Margin="2"/>
+                    <TextBlock Text="SurfaceWidth Height" Margin="2" />
                     <TextBox Margin="2" Text="{Binding SimulationParams.SurfaceHeight,UpdateSourceTrigger=PropertyChanged}" />
                 </UniformGrid>
                 <Slider Minimum="10" Maximum="1000" Value="{Binding SimulationParams.SurfaceHeight, Delay=1000}" TickFrequency="50" TickPlacement="Both" IsSnapToTickEnabled="True"></Slider>
-
             </StackPanel>
             <StackPanel>
                 <UniformGrid Columns="2" Margin="2">
-                    <TextBlock Text="SurfaceWidth Width" Margin="2"/>
-                    <TextBox Margin="2" Text="{Binding SimulationParams.SurfaceWidth, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="SurfaceWidth Width" Margin="2" />
+                    <TextBox Margin="2" Text="{Binding SimulationParams.SurfaceWidth, UpdateSourceTrigger=PropertyChanged}" />
                 </UniformGrid>
                 <Slider Minimum="10" Maximum="1000" Value="{Binding SimulationParams.SurfaceWidth, Delay=1000}" TickFrequency="50" TickPlacement="Both" IsSnapToTickEnabled="True"></Slider>
-
             </StackPanel>
 
             <UniformGrid Columns="2" Margin="2">
-                <TextBlock Text="Units number" Margin="2"/>
-                <TextBox Margin="2" Text="{Binding SimulationParams.UnitsNumber}"/>
+                <TextBlock Text="Units number" Margin="2" />
+                <TextBox Margin="2" Text="{Binding SimulationParams.UnitsNumber}" />
             </UniformGrid>
 
             <StackPanel>
                 <UniformGrid Rows="2" Margin="2">
                     <TextBlock Text="Speed" Margin="2"></TextBlock>
                     <TextBox Margin="2" Text="{Binding SimulationParams.Speed,UpdateSourceTrigger=PropertyChanged}" />
-
                 </UniformGrid>
                 <Slider Minimum="0" Maximum="2" Value="{Binding SimulationParams.Speed, Delay=1000}" TickFrequency="0.1" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
-
             </StackPanel>
             <StackPanel>
                 <UniformGrid Rows="2" Margin="2">
                     <TextBlock Text="Audacity" Margin="2"></TextBlock>
                     <TextBox Margin="2" Text="{Binding SimulationParams.Audacity,UpdateSourceTrigger=PropertyChanged}" />
-
                 </UniformGrid>
                 <Slider Minimum="0" Maximum="1" Value="{Binding SimulationParams.Audacity, Delay=1000}" TickFrequency="0.05" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
-
             </StackPanel>
 
             <StackPanel>
                 <UniformGrid Rows="2" Margin="2">
                     <TextBlock Text="Determination" Margin="2"></TextBlock>
                     <TextBox Margin="2" Text="{Binding SimulationParams.Determination,UpdateSourceTrigger=PropertyChanged}" />
-
                 </UniformGrid>
                 <Slider Minimum="0" Maximum="1" Value="{Binding SimulationParams.Determination, Delay=1000}" TickFrequency="0.05" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
-
             </StackPanel>
-            <Button Command="{Binding GenerateCommand}" Margin="2" Content="Generate"/>
-            <Button Command="{Binding StartMoveCommand}" Margin="2" Content="Start move"/>
-            <Button Command="{Binding StopMoveCommand}" Margin="2" Content="Stop move"/>
-
+            <Button Command="{Binding GenerateCommand}" Margin="2" Content="Generate" />
+            <Button Command="{Binding StartMoveCommand}" Margin="2" Content="Start move" />
+            <Button Command="{Binding StopMoveCommand}" Margin="2" Content="Stop move" />
         </StackPanel>
     </Grid>
 </Window>

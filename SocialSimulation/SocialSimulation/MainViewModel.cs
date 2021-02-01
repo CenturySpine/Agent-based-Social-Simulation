@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,34 +12,48 @@ namespace SocialSimulation
     {
         public GlobalSimulationParameters SimulationParams { get; }
         private readonly MovementService _movement;
+        private readonly Logger _logger;
         private List<Entity> _entities;
         private Timer _moveTimer;
         private Random _rnd;
-        
+
         private bool _stopped;
 
         private Random _xRnd;
         private Random _yRnd;
 
-        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement)
+        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement, Logger logger)
         {
             SimulationParams = simulationParams;
             _movement = movement;
-            SimulationParams.PropertyChanged+=SimulationParamsOnPropertyChanged;
+            _logger = logger;
+            SimulationParams.PropertyChanged += SimulationParamsOnPropertyChanged;
 
             GenerateCommand = new RelayCommand(ExecuteGenerate);
             StartMoveCommand = new RelayCommand(ExecuteStartMove);
             StopMoveCommand = new RelayCommand(ExecuteStopMove);
 
             Entities = new List<Entity>();
+            Logs = new ObservableCollection<string>();
 
+            _logger.RegisterListener(InternalLog);
 
             GenerateRng();
         }
 
+        public ObservableCollection<string> Logs { get; set; }
+
+        private void InternalLog(string obj)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Logs.Insert(0, obj);
+            }));
+        }
+
         private void SimulationParamsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(GlobalSimulationParameters.Speed))
+            if (e.PropertyName == nameof(GlobalSimulationParameters.Speed))
                 ChangeSpeed();
 
             if (e.PropertyName == nameof(GlobalSimulationParameters.Determination))
@@ -48,20 +63,17 @@ namespace SocialSimulation
                 ChangeAudacity();
         }
 
-
         private void ChangeDetermination()
         {
-
             lock (_entitiesLock)
             {
                 foreach (var entity in Entities)
                 {
+                    _logger.Log($"Changing {nameof(SimulationParams.Determination)} to {SimulationParams.Determination}");
                     entity.Determination = SimulationParams.Determination;
                 }
             }
         }
-
-
 
         public List<Entity> Entities
         {
@@ -71,12 +83,9 @@ namespace SocialSimulation
 
         public RelayCommand GenerateCommand { get; }
 
-
-
         public RelayCommand StartMoveCommand { get; }
 
         public RelayCommand StopMoveCommand { get; }
-      
 
         private void ChangeAudacity()
         {
@@ -84,6 +93,7 @@ namespace SocialSimulation
             {
                 foreach (var entity in Entities)
                 {
+                    _logger.Log($"Changing {nameof(SimulationParams.Audacity)} to {SimulationParams.Audacity}");
                     entity.Audacity = SimulationParams.Audacity;
                 }
             }
@@ -95,6 +105,7 @@ namespace SocialSimulation
             {
                 foreach (var entity in Entities)
                 {
+                    _logger.Log($"Changing {nameof(SimulationParams.Speed)} to {SimulationParams.Speed}");
                     entity.Speed = SimulationParams.Speed;
                 }
             }
@@ -117,23 +128,27 @@ namespace SocialSimulation
                         var y = _yRnd.Next(SimulationParams.entitySize, SimulationParams.SurfaceHeight - SimulationParams.entitySize) - SimulationParams.entitySize / 2;
 
                         e.Direction = (StartDirection)_rnd.Next(0, 4);
-                        e.Position = new Point(x, y);
+                        e.Position = e.Goal.GoalPosition = new Point(x, y);
                         ets.Add(e);
                     }
 
                     Entities = ets;
                 }
+                _logger.Log($"Generation completed");
+
             });
         }
 
         private void ExecuteStartMove(object o)
         {
+            _logger.Log($"Starting movement");
             _stopped = false;
             _moveTimer = new Timer(OnUpdateEntities, null, 1000, 16);
         }
 
         private void ExecuteStopMove(object o)
         {
+            _logger.Log($"Stopping movement");
             _moveTimer?.Dispose();
             _moveTimer = null;
             _stopped = true;
@@ -147,7 +162,6 @@ namespace SocialSimulation
         }
 
         private readonly object _entitiesLock = new object();
-        
 
         private void OnUpdateEntities(object state)
         {
@@ -158,9 +172,18 @@ namespace SocialSimulation
             {
                 foreach (var entity in Entities)
                 {
-
                     _movement.Update(entity);
+                }
+            }
+        }
 
+        public void SetGoal(Point getPosition)
+        {
+            lock (_entitiesLock)
+            {
+                foreach (var entity in Entities)
+                {
+                    entity.Goal.GoalPosition = new Point(getPosition.X /*- SimulationParams.entitySize / 2*/, getPosition.Y /*- SimulationParams.entitySize / 2*/);
                 }
             }
         }

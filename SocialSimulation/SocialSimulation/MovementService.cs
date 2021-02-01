@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Container = SimpleInjector.Container;
 
@@ -9,23 +8,26 @@ namespace SocialSimulation
     public class MovementService
     {
         private readonly GlobalSimulationParameters _simParams;
+        private readonly Logger _logger;
 
-        private List<Func<IEntityBehavior>> behaviors;
-        private Random _rnd = new Random(DateTime.Now.Millisecond);
-        public MovementService(GlobalSimulationParameters simParams, Container container)
+        private readonly List<Func<IEntityBehavior>> _behaviors;
+        private readonly Random _rnd = new Random(DateTime.Now.Millisecond);
+
+        public MovementService(GlobalSimulationParameters simParams, Container container, Logger logger)
         {
             _simParams = simParams;
+            _logger = logger;
 
-
-            behaviors = new List<Func<IEntityBehavior>>
+            _behaviors = new List<Func<IEntityBehavior>>
             {
                 container.GetInstance<AudacityBehavior>,
                 container.GetInstance<MoveBehavior>,
             };
         }
+
         public void Update(Entity entity)
         {
-            foreach (var entityBehavior in behaviors.Select(b => b()))
+            foreach (var entityBehavior in _behaviors.Select(b => b()))
             {
                 entityBehavior.Behave(entity, _simParams, _rnd);
             }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows.Input;
 
 namespace SocialSimulation
@@ -74,7 +73,7 @@ namespace SocialSimulation
         }
 
         // Ensures WPF commanding infrastructure asks all RelayCommand objects whether their
-        // associated views should be enabled whenever a command is invoked 
+        // associated views should be enabled whenever a command is invoked
         public event EventHandler CanExecuteChanged
         {
             add

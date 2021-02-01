@@ -9,9 +9,10 @@
             UnitsNumber = 10;
             entitySize = 10;
             Speed = 1;
-            Audacity = 0.3;
+            Audacity = 0.05;
             Determination = 0.95;
         }
+
         public double Determination
         {
             get => _determination;
@@ -21,7 +22,9 @@
                 //ChangeDetermination();
             }
         }
+
         private double _audacity;
+
         public double Audacity
         {
             get => _audacity;
@@ -31,6 +34,7 @@
                 //ChangeAudacity();
             }
         }
+
         public double Speed
         {
             get => _speed;
@@ -40,6 +44,7 @@
                 //ChangeSpeed();
             }
         }
+
         public int SurfaceHeight
         {
             get => _surfaceHeight;

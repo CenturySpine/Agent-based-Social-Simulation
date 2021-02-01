@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace SocialSimulation
@@ -18,6 +17,10 @@ namespace SocialSimulation
         private void MainWindow_OnMouseMove(object sender, MouseEventArgs e)
         {
         }
-    }
 
+        private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((MainViewModel) DataContext).SetGoal(e.GetPosition((IInputElement) sender));
+        }
+    }
 }
