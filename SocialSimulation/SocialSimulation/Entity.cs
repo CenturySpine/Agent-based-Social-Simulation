@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Numerics;
+using System.Windows;
 
 namespace SocialSimulation
 {
@@ -8,11 +9,11 @@ namespace SocialSimulation
         {
             Goal = new Goal();
         }
-        private Point _position;
+        private Vector2 _position;
         public int Id { get; set; }
         public int Initiative { get; set; }
 
-        public Point Position
+        public Vector2 Position
         {
             get => _position;
             set { _position = value; OnPropertyChanged(); }
@@ -28,16 +29,6 @@ namespace SocialSimulation
         public double Continuation { get; set; }
 
         public Goal Goal { get; set; }
-    }
-
-    public class Goal : NotifierBase
-    {
-        private Point _goalPosition;
-
-        public Point GoalPosition
-        {
-            get => _goalPosition;
-            set { _goalPosition = value; OnPropertyChanged(); }
-        }
+        public MovementType IsMovingTowardGoal { get; set; }
     }
 }

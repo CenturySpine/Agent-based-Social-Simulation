@@ -1,132 +1,196 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
+using System.Numerics;
 
 namespace SocialSimulation
 {
-    public class Logger
+    public interface IDirectionInitiator
     {
-        private readonly List<Action<string>> _listeners;
-        private readonly object _listenersLock = new object();
+        Vector2 InitiateDirectionGoal(Entity entity, GlobalSimulationParameters parameters);
+    }
 
-        public Logger()
+    public class GoalNavigationBehavior : IDirectionInitiator
+    {
+        private readonly Logger _logger;
+
+        public GoalNavigationBehavior(Logger logger)
         {
-            _listeners = new List<Action<string>>();
+            _logger = logger;
         }
 
-        public void Log(string message)
+        public Vector2 InitiateDirectionGoal(Entity entity, GlobalSimulationParameters parameters)
         {
-            lock (_listenersLock)
-            {
-                foreach (var listener in _listeners)
-                {
-                    listener(message);
-                }
-            }
-        }
-
-        public void RegisterListener(Action<string> listener)
-        {
-            lock (_listenersLock)
-            {
-                _listeners.Add(listener);
-            }
+            var end = new Vector2(entity.Goal.GoalPosition.X, entity.Goal.GoalPosition.Y);
+            _logger.Log($"Defined goal :{end}");
+            return end;
         }
     }
+
+    public class StraightNavigationBehavior : IDirectionInitiator
+    {
+        private readonly Logger _logger;
+
+        public StraightNavigationBehavior(Logger logger)
+        {
+            _logger = logger;
+        }
+
+        public Vector2 InitiateDirectionGoal(Entity entity, GlobalSimulationParameters parameters)
+        {
+            Vector2 end;
+            switch (entity.Direction)
+            {
+                case StartDirection.Left:
+                    //move left = goal is the left border of surface, keeping top position constant
+                    end = new Vector2(0, entity.Position.Y);
+                    break;
+
+                case StartDirection.Top:
+                    //move top = goal is the top border of surface, keeping left position constant
+                    end = new Vector2(entity.Position.X, 0);
+                    break;
+
+                case StartDirection.Right:
+                    //move right = goal is the right border of surface, keeping top position constant
+                    end = new Vector2(parameters.SurfaceWidth - parameters.entitySize, entity.Position.Y);
+                    break;
+
+                case StartDirection.Bottom:
+                    //move bottom = goal is the bottom border of surface, keeping left position constant
+                    end = new Vector2(entity.Position.X, parameters.SurfaceHeight - parameters.entitySize);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            _logger.Log($"Basic goal :{end}");
+            _logger.Log($"Starting to move in straight line");
+            return end;
+        }
+    }
+
     public class MoveBehavior : IEntityBehavior
     {
-        private Random _rnd = new Random(DateTime.Now.Millisecond);
-        private Logger _logger;
+        private readonly Random _rnd = new Random(DateTime.Now.Millisecond);
+        private readonly Logger _logger;
 
         public MoveBehavior(Logger logger)
         {
             _logger = logger;
         }
-        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random)
-        {
 
-            if (AboutPointEqual(entity.Goal.GoalPosition, entity.Position))
+        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random, Dictionary<Entity, MoveData> goalTrack)
+        {
+            Vector2 start = new Vector2(entity.Position.X, entity.Position.Y);
+
+            IDirectionInitiator directionInitiator = null;
+            if (entity.IsMovingTowardGoal == MovementType.Stopped)
             {
-                MoveLinear(entity, simulationParams);
+                _logger.Log("Defining basic - straight line - goal... ");
+
+                directionInitiator = new StraightNavigationBehavior(_logger);
             }
-            else
+            else if (entity.IsMovingTowardGoal == MovementType.TowardGoal && entity.Goal != null)
             {
-                MoveTowardGoal(entity, simulationParams);
+                _logger.Log("Defining goal... ");
+                directionInitiator = new GoalNavigationBehavior(_logger);
             }
-        }
-        public static bool AboutPointEqual(Point a, Point b)
-        {
-            return AboutEqual(a.X, b.X) && AboutEqual(a.Y, b.Y);
-        }
-        public static bool AboutEqual(double x, double y)
-        {
-            
-            return Math.Abs(x - y) <= 0.001;
-        }
-        private void MoveTowardGoal(Entity entity, GlobalSimulationParameters simulationParams)
-        {
-            var goalPos = entity.Goal.GoalPosition;
 
-
-            Vector totalTranslation = new Vector(goalPos.X - entity.Position.X /*- simulationParams.entitySize / 2*/, goalPos.Y - entity.Position.Y/* - simulationParams.entitySize / 2*/);
-
-            //TODO : find the 
-            Vector perSecond = totalTranslation / 16.666667;
-
-
-            entity.Position = new Point(entity.Position.X + perSecond.X, entity.Position.Y + perSecond.Y);
-            if (AboutPointEqual(entity.Goal.GoalPosition, entity.Position))
+            if (directionInitiator != null)
             {
-                _logger.Log("Goal reached!!!");
+                Vector2 end = directionInitiator.InitiateDirectionGoal(entity, simulationParams);
+
+
+
+                float distance = Vector2.Distance(start, end);
+                Vector2 direction = Vector2.Normalize(end - start);
+
+                entity.Position = start;
+                goalTrack[entity] = new MoveData { Dir = direction, distance = distance, start = start, end = end };
+
+                entity.IsMovingTowardGoal = MovementType.StraightLine;
+
+                if (float.IsNaN(goalTrack[entity].Dir.X) || float.IsNaN(goalTrack[entity].Dir.Y))
+                {
+                    //do something
+                }
             }
+
+            Move(entity, goalTrack);
         }
 
-        private static void MoveLinear(Entity entity, GlobalSimulationParameters simulationParams)
+        private class DirectionSwitchBounce : IDirectionSwitch
         {
-            switch (entity.Direction)
+            void IDirectionSwitch.Switch(Entity entity, Random rnd)
             {
-                case StartDirection.Left:
-                    entity.Position = new Point(entity.Position.X - entity.Speed, entity.Position.Y);
-                    entity.Goal.GoalPosition = entity.Position;
-                    if (entity.Position.X <= 0)
-                    {
+                //basic bounce behavior : at the end of the path, just turn around and move in the opposite direction
+                switch (entity.Direction)
+                {
+                    case StartDirection.Left:
                         entity.Direction = StartDirection.Right;
-                    }
+                        break;
 
-                    break;
-
-                case StartDirection.Top:
-                    entity.Position = new Point(entity.Position.X, entity.Position.Y - entity.Speed);
-                    entity.Goal.GoalPosition = entity.Position;
-                    if (entity.Position.Y <= 0)
-                    {
+                    case StartDirection.Top:
                         entity.Direction = StartDirection.Bottom;
-                    }
+                        break;
 
-                    break;
-
-                case StartDirection.Right:
-                    entity.Position = new Point(entity.Position.X + entity.Speed, entity.Position.Y);
-                    entity.Goal.GoalPosition = entity.Position;
-                    if (entity.Position.X >= simulationParams.SurfaceWidth - simulationParams.entitySize)
-                    {
+                    case StartDirection.Right:
                         entity.Direction = StartDirection.Left;
-                    }
+                        break;
 
-                    break;
-
-                case StartDirection.Bottom:
-                    entity.Position = new Point(entity.Position.X, entity.Position.Y + entity.Speed);
-                    entity.Goal.GoalPosition = entity.Position;
-                    if (entity.Position.Y >= simulationParams.SurfaceHeight - simulationParams.entitySize)
-                    {
+                    case StartDirection.Bottom:
                         entity.Direction = StartDirection.Top;
-                    }
+                        break;
 
-                    break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
 
-                default:
-                    throw new ArgumentOutOfRangeException();
+        private class DirectionSwitchRandom : IDirectionSwitch
+        {
+            void IDirectionSwitch.Switch(Entity entity, Random rnd)
+            {
+                entity.Direction = (StartDirection)rnd.Next(0, 4);
+            }
+        }
+
+        private void Move(Entity entity, Dictionary<Entity, MoveData> goalTrack)
+        {
+            MoveData data = goalTrack[entity];
+
+            entity.Position = entity.Position
+                              + data.Dir //direction
+                              * (float)entity.Speed //entity speed
+                              * (1000f / 60f); //refresh frequency
+
+            if (float.IsNaN(entity.Position.X) || float.IsNaN(entity.Position.Y))
+            {
+                entity.Position = new Vector2(0.0f, 0.0f);
+            }
+
+            if (Vector2.Distance(data.start, entity.Position) >= data.distance)
+            {
+                entity.Position = data.end;
+
+                IDirectionSwitch switchBehavior;
+                if (entity.Goal != null)
+                {
+                    _logger.Log("Goal reached!!!");
+
+                    entity.Goal = null;
+                    switchBehavior = new DirectionSwitchRandom();
+                }
+                else
+                {
+                    _logger.Log("End of the line");
+                    switchBehavior = new DirectionSwitchBounce();
+                }
+
+                //trigger goal definition on next loop
+                entity.IsMovingTowardGoal = MovementType.Stopped;
+                switchBehavior.Switch(entity, _rnd);
             }
         }
     }

@@ -19,6 +19,9 @@
                 <RowDefinition Height="0.3*"/>
             </Grid.RowDefinitions>
             <ItemsControl ItemsSource="{Binding Entities}"  >
+                <ItemsControl.Resources>
+                    <local:Vector2ToPointConverter x:Key="vtp" />
+                </ItemsControl.Resources>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas Background="LightGray" VerticalAlignment="Center" HorizontalAlignment="Center"
@@ -31,13 +34,26 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style TargetType="{x:Type ContentPresenter}">
-                        <Setter Property="Canvas.Top" Value="{Binding Position.Y}"></Setter>
-                        <Setter Property="Canvas.Left" Value="{Binding Position.X}"></Setter>
+                        <Setter Property="Canvas.Top" Value="{Binding Position, Converter={StaticResource vtp},ConverterParameter='y'}" />
+                        <Setter Property="Canvas.Left" Value="{Binding Position,Converter={StaticResource vtp}, ConverterParameter='x'}" />
                     </Style>
                 </ItemsControl.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Ellipse Width="10" Height="10" Fill="Black"></Ellipse>
+                        <Canvas Width="10" Height="10" Background="Beige">
+                            <Canvas.Style>
+                                <Style TargetType="{x:Type Canvas}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="ToolTip" Value="{Binding Position}"></Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Canvas.Style>
+                            <TextBlock Text="{Binding Id}" Canvas.Top="5" Canvas.Left="5" FontFamily="Courier New" FontSize="14" Foreground="Red" FontWeight="Bold"></TextBlock>
+                            <Ellipse Width="8" Height="8" Fill="Black" Canvas.Top="1" Canvas.Left="1"/>
+                            
+                        </Canvas>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -69,14 +85,15 @@
                     <TextBlock Text="Speed" Margin="2"></TextBlock>
                     <TextBox Margin="2" Text="{Binding SimulationParams.Speed,UpdateSourceTrigger=PropertyChanged}" />
                 </UniformGrid>
-                <Slider Minimum="0" Maximum="2" Value="{Binding SimulationParams.Speed, Delay=1000}" TickFrequency="0.1" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
+                <Slider Minimum="{Binding SimulationParams.MinSpeed}" Maximum="{Binding SimulationParams.MaxSpeed}" 
+                        Value="{Binding SimulationParams.Speed, Delay=1000}" TickFrequency="0.01" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
             </StackPanel>
             <StackPanel>
                 <UniformGrid Rows="2" Margin="2">
                     <TextBlock Text="Audacity" Margin="2"></TextBlock>
                     <TextBox Margin="2" Text="{Binding SimulationParams.Audacity,UpdateSourceTrigger=PropertyChanged}" />
                 </UniformGrid>
-                <Slider Minimum="0" Maximum="1" Value="{Binding SimulationParams.Audacity, Delay=1000}" TickFrequency="0.05" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
+                <Slider Minimum="0" Maximum="1" Value="{Binding SimulationParams.Audacity, Delay=1000}" TickFrequency="0.01" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
             </StackPanel>
 
             <StackPanel>

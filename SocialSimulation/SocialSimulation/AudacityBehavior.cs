@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SocialSimulation
 {
@@ -10,24 +11,26 @@ namespace SocialSimulation
         {
             _logger = logger;
         }
-        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random)
+        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random,
+            Dictionary<Entity, MoveData> goalTrack)
         {
-            var audacityInfluence = random.NextDouble() < entity.Audacity && (entity.Continuation > entity.Determination);
+            var audacityInfluence = random.NextDouble() < entity.Audacity /*&& (entity.Continuation > entity.Determination)*/;
 
-            if (audacityInfluence)
+            if (audacityInfluence && entity.Goal == null)
             {
                 var newDir = entity.Direction;
                 while (newDir == entity.Direction)
                 {
                     newDir = (StartDirection)random.Next(0, 4);
                 }
-                _logger.Log($"Entity {entity.Id} changed direction from {entity.Direction} to {newDir}");
+                //_logger.Log($"Entity {entity.Id} changed direction from {entity.Direction} to {newDir}");
                 entity.Direction = newDir;
-                entity.Continuation = 0.0;
+                //entity.Continuation = 0.0;
+                entity.IsMovingTowardGoal = MovementType.Stopped;
             }
             else
             {
-                entity.Continuation += 0.05;
+                //entity.Continuation += 0.05;
             }
         }
     }

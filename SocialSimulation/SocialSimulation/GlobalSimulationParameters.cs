@@ -4,14 +4,20 @@
     {
         public GlobalSimulationParameters()
         {
-            SurfaceHeight = 200;
-            SurfaceWidth = 200;
-            UnitsNumber = 10;
+            SurfaceHeight = 300;
+            SurfaceWidth = 300;
+            UnitsNumber = 1;
             entitySize = 10;
-            Speed = 1;
-            Audacity = 0.05;
+            Speed = 0.1;
+            MinSpeed = 0.0;
+            MaxSpeed = 1.0;
+            Audacity = 0.01;
             Determination = 0.95;
         }
+
+        public double MinSpeed { get; set; }
+
+        public double MaxSpeed { get; set; }
 
         public double Determination
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -128,7 +129,8 @@ namespace SocialSimulation
                         var y = _yRnd.Next(SimulationParams.entitySize, SimulationParams.SurfaceHeight - SimulationParams.entitySize) - SimulationParams.entitySize / 2;
 
                         e.Direction = (StartDirection)_rnd.Next(0, 4);
-                        e.Position = e.Goal.GoalPosition = new Point(x, y);
+                        e.Position = new Vector2(x, y);
+                        e.Goal = null;
                         ets.Add(e);
                     }
 
@@ -183,7 +185,8 @@ namespace SocialSimulation
             {
                 foreach (var entity in Entities)
                 {
-                    entity.Goal.GoalPosition = new Point(getPosition.X /*- SimulationParams.entitySize / 2*/, getPosition.Y /*- SimulationParams.entitySize / 2*/);
+                    entity.Goal = new Goal() { GoalPosition = new Vector2((float)getPosition.X /*- SimulationParams.entitySize / 2*/, (float)getPosition.Y /*- SimulationParams.entitySize / 2*/) };
+                    entity.IsMovingTowardGoal = MovementType.TowardGoal;
                 }
             }
         }
