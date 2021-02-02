@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Windows;
+using System.Windows.Shapes;
 
 namespace SocialSimulation
 {
@@ -116,7 +118,7 @@ namespace SocialSimulation
                 }
             }
 
-            Move(entity, goalTrack);
+            Move(entity, goalTrack,simulationParams);
         }
 
         private class DirectionSwitchBounce : IDirectionSwitch
@@ -156,7 +158,8 @@ namespace SocialSimulation
             }
         }
 
-        private void Move(Entity entity, Dictionary<Entity, MoveData> goalTrack)
+        private void Move(Entity entity, Dictionary<Entity, MoveData> goalTrack,
+            GlobalSimulationParameters globalSimulationParameters)
         {
             MoveData data = goalTrack[entity];
 
@@ -169,6 +172,8 @@ namespace SocialSimulation
             {
                 entity.Position = new Vector2(0.0f, 0.0f);
             }
+
+            UpdatePersonalSpace(entity, globalSimulationParameters);
 
             if (Vector2.Distance(data.start, entity.Position) >= data.distance)
             {
@@ -192,6 +197,14 @@ namespace SocialSimulation
                 entity.IsMovingTowardGoal = MovementType.Stopped;
                 switchBehavior.Switch(entity, _rnd);
             }
+        }
+
+        public static void UpdatePersonalSpace(Entity entity, GlobalSimulationParameters para)
+        {
+            var topleft = new Vector2(entity.Position.X+para.entitySize/2 - (float)entity.PersonalSpaceSize, entity.Position.Y + para.entitySize / 2 - (float)entity.PersonalSpaceSize);
+
+
+            entity.PersonalSpaceOrigin = topleft;
         }
     }
 }

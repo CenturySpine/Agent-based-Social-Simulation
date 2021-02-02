@@ -14,7 +14,7 @@ namespace SocialSimulation
         public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random,
             Dictionary<Entity, MoveData> goalTrack)
         {
-            var audacityInfluence = random.NextDouble() < entity.Audacity /*&& (entity.Continuation > entity.Determination)*/;
+            var audacityInfluence = random.NextDouble() < entity.Audacity /*&& (entity.Continuation > entity.PersonalSpace)*/;
 
             if (audacityInfluence && entity.Goal == null)
             {

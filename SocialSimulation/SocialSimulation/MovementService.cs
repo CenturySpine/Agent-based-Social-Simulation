@@ -12,7 +12,7 @@ namespace SocialSimulation
 
         private readonly List<Func<IEntityBehavior>> _behaviors;
         private readonly Random _rnd = new Random(DateTime.Now.Millisecond);
-        private Dictionary<Entity, MoveData> _goalTrack;
+        private readonly Dictionary<Entity, MoveData> _goalTrack;
 
         public MovementService(GlobalSimulationParameters simParams, Container container, Logger logger)
         {

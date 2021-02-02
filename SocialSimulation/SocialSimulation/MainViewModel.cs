@@ -57,7 +57,7 @@ namespace SocialSimulation
             if (e.PropertyName == nameof(GlobalSimulationParameters.Speed))
                 ChangeSpeed();
 
-            if (e.PropertyName == nameof(GlobalSimulationParameters.Determination))
+            if (e.PropertyName == nameof(GlobalSimulationParameters.PersonalSpace))
                 ChangeDetermination();
 
             if (e.PropertyName == nameof(GlobalSimulationParameters.Audacity))
@@ -66,14 +66,14 @@ namespace SocialSimulation
 
         private void ChangeDetermination()
         {
-            lock (_entitiesLock)
-            {
-                foreach (var entity in Entities)
-                {
-                    _logger.Log($"Changing {nameof(SimulationParams.Determination)} to {SimulationParams.Determination}");
-                    entity.Determination = SimulationParams.Determination;
-                }
-            }
+            //lock (_entitiesLock)
+            //{
+            //    foreach (var entity in Entities)
+            //    {
+            //        _logger.Log($"Changing {nameof(SimulationParams.PersonalSpace)} to {SimulationParams.PersonalSpace}");
+            //        entity.Determination = SimulationParams.PersonalSpace;
+            //    }
+            //}
         }
 
         public List<Entity> Entities
@@ -122,7 +122,7 @@ namespace SocialSimulation
                     var ets = new List<Entity>();
                     for (int i = 0; i < SimulationParams.UnitsNumber; i++)
                     {
-                        var e = new Entity() { Id = i + 1, Speed = SimulationParams.Speed, Audacity = SimulationParams.Audacity, Determination = SimulationParams.Determination };
+                        var e = new Entity() { Id = i + 1, Speed = SimulationParams.Speed, Audacity = SimulationParams.Audacity};
 
                         var x = _xRnd.Next(SimulationParams.entitySize, SimulationParams.SurfaceWidth - SimulationParams.entitySize) - SimulationParams.entitySize / 2;
 
@@ -130,6 +130,8 @@ namespace SocialSimulation
 
                         e.Direction = (StartDirection)_rnd.Next(0, 4);
                         e.Position = new Vector2(x, y);
+                        e.PersonalSpaceSize = SimulationParams.PersonalSpace;
+                        MoveBehavior.UpdatePersonalSpace(e, SimulationParams);
                         e.Goal = null;
                         ets.Add(e);
                     }

@@ -12,20 +12,19 @@
             MinSpeed = 0.0;
             MaxSpeed = 1.0;
             Audacity = 0.01;
-            Determination = 0.95;
+            PersonalSpace = 20;
         }
 
         public double MinSpeed { get; set; }
 
         public double MaxSpeed { get; set; }
 
-        public double Determination
+        public double PersonalSpace
         {
-            get => _determination;
+            get => _personalSpace;
             set
             {
-                _determination = value; OnPropertyChanged();
-                //ChangeDetermination();
+                _personalSpace = value; OnPropertyChanged();
             }
         }
 
@@ -76,6 +75,7 @@
         private int _surfaceWidth;
         private int _unitsNumber;
         private double _speed;
-        private double _determination;
+        private double _personalSpace;
+        private double _personalSpaceDouble;
     }
 }
