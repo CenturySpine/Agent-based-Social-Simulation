@@ -29,12 +29,12 @@ namespace SocialSimulation
 
                 case StartDirection.Right:
                     //move right = goal is the right border of surface, keeping top position constant
-                    end = new Vector2(parameters.SurfaceWidth - parameters.entitySize, entity.Position.Y);
+                    end = new Vector2(parameters.SurfaceWidth - entity.SelfSize, entity.Position.Y);
                     break;
 
                 case StartDirection.Bottom:
                     //move bottom = goal is the bottom border of surface, keeping left position constant
-                    end = new Vector2(entity.Position.X, parameters.SurfaceHeight - parameters.entitySize);
+                    end = new Vector2(entity.Position.X, parameters.SurfaceHeight - entity.SelfSize);
                     break;
 
                 default:

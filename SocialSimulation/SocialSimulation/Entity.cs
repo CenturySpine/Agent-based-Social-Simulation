@@ -67,5 +67,7 @@ namespace SocialSimulation
                 IsColliding = value.Any();
             }
         }
+
+        public int SelfSize { get; set; }
     }
 }

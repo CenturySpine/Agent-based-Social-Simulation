@@ -125,16 +125,16 @@ namespace SocialSimulation
                     var ets = new List<Entity>();
                     for (int i = 0; i < SimulationParams.UnitsNumber; i++)
                     {
-                        var e = new Entity() { Id = i + 1, Speed = SimulationParams.Speed, Audacity = SimulationParams.Audacity };
+                        var e = new Entity() { Id = i + 1, Speed = SimulationParams.Speed, Audacity = SimulationParams.Audacity, SelfSize = SimulationParams.EntitySize };
 
-                        var x = _xRnd.Next(SimulationParams.entitySize, SimulationParams.SurfaceWidth - SimulationParams.entitySize) - SimulationParams.entitySize / 2;
+                        var x = _xRnd.Next(e.SelfSize, SimulationParams.SurfaceWidth - e.SelfSize) - e.SelfSize / 2;
 
-                        var y = _yRnd.Next(SimulationParams.entitySize, SimulationParams.SurfaceHeight - SimulationParams.entitySize) - SimulationParams.entitySize / 2;
+                        var y = _yRnd.Next(e.SelfSize, SimulationParams.SurfaceHeight - e.SelfSize) - e.SelfSize / 2;
 
                         e.Direction = (StartDirection)_rnd.Next(0, 4);
                         e.Position = new Vector2(x, y);
                         e.PersonalSpaceSize = SimulationParams.PersonalSpace;
-                        MoveBehavior.UpdatePersonalSpace(e, SimulationParams);
+                        MoveBehavior.UpdatePersonalSpace(e);
                         e.Goal = null;
                         ets.Add(e);
                     }
@@ -195,7 +195,7 @@ namespace SocialSimulation
             {
                 foreach (var entity in Entities)
                 {
-                    entity.Goal = new Goal() { GoalPosition = new Vector2((float)getPosition.X /*- SimulationParams.entitySize / 2*/, (float)getPosition.Y /*- SimulationParams.entitySize / 2*/) };
+                    entity.Goal = new Goal() { GoalPosition = new Vector2((float)getPosition.X , (float)getPosition.Y ) };
                     entity.IsMovingTowardGoal = MovementType.TowardGoal;
                 }
             }

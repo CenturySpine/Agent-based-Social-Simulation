@@ -13,7 +13,7 @@ namespace SocialSimulation
             _logger = logger;
         }
 
-        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random/*, Dictionary<Entity, MoveData> goalTrack*/)
+        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random)
         {
             Vector2 start = new Vector2(entity.Position.X, entity.Position.Y);
 
@@ -48,7 +48,7 @@ namespace SocialSimulation
                 }
             }
 
-            Move(entity, simulationParams);
+            Move(entity);
         }
 
         private class DirectionSwitchBounce : IDirectionSwitch
@@ -88,32 +88,22 @@ namespace SocialSimulation
             }
         }
 
-        private void Move(Entity entity/*, Dictionary<Entity, MoveData> goalTrack*/,
-            GlobalSimulationParameters globalSimulationParameters)
+        private void Move(Entity entity)
         {
             MoveData data = entity.CurrentMoveData;
 
-            entity.Position = entity.Position
-                              + data.Dir //direction
-                              * (float)entity.Speed //entity speed
-                              * (1000f / 60f); //refresh frequency
+            entity.Position += data.Dir //direction
+                               * (float)entity.Speed //entity speed
+                               * (1000f / 60f); //refresh frequency
 
             if (float.IsNaN(entity.Position.X) || float.IsNaN(entity.Position.Y))
             {
                 entity.Position = new Vector2(0.0f, 0.0f);
             }
 
-            UpdatePersonalSpace(entity, globalSimulationParameters);
+            UpdatePersonalSpace(entity);
 
-            entity.Bound = new BoundBox()
-            {
-                x = (float)entity.PersonalSpaceOrigin.X,
-                y = (float)(entity.PersonalSpaceOrigin.Y),
-                width = entity.PersonalSpaceSize * 2,
-                height = entity.PersonalSpaceSize * 2,
-                //min = new Vector2((float)entity.PersonalSpaceOrigin.X, (float)(entity.PersonalSpaceOrigin.Y + entity.PersonalSpaceSize)),
-                //max = new Vector2((float)(entity.PersonalSpaceOrigin.X + entity.PersonalSpaceSize), (float)(entity.PersonalSpaceOrigin.Y)),
-            };
+            UpdateBoundBox(entity);
 
             if (Vector2.Distance(data.start, entity.Position) >= data.distance)
             {
@@ -139,9 +129,20 @@ namespace SocialSimulation
             }
         }
 
-        public static void UpdatePersonalSpace(Entity entity, GlobalSimulationParameters para)
+        private static void UpdateBoundBox(Entity entity)
         {
-            var topleft = new Vector2(entity.Position.X + para.entitySize / 2 - (float)entity.PersonalSpaceSize, entity.Position.Y + para.entitySize / 2 - (float)entity.PersonalSpaceSize);
+            entity.Bound = new BoundBox()
+            {
+                X = (float) entity.PersonalSpaceOrigin.X,
+                Y = (float) (entity.PersonalSpaceOrigin.Y),
+                Width = entity.PersonalSpaceSize * 2,
+                Height = entity.PersonalSpaceSize * 2,
+            };
+        }
+
+        public static void UpdatePersonalSpace(Entity entity)
+        {
+            var topleft = new Vector2(entity.Position.X + entity.SelfSize / 2 - (float)entity.PersonalSpaceSize, entity.Position.Y + entity.SelfSize / 2 - (float)entity.PersonalSpaceSize);
 
             entity.PersonalSpaceOrigin = topleft;
         }

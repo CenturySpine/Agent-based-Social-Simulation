@@ -7,7 +7,7 @@
             SurfaceHeight = 300;
             SurfaceWidth = 300;
             UnitsNumber = 1;
-            entitySize = 10;
+            EntitySize = 10;
             Speed = 0.1;
             MinSpeed = 0.0;
             MaxSpeed = 1.0;
@@ -69,13 +69,12 @@
             set { _unitsNumber = value; OnPropertyChanged(); }
         }
 
-        public int entitySize { get; set; }
+        public int EntitySize { get; set; }
 
         private int _surfaceHeight;
         private int _surfaceWidth;
         private int _unitsNumber;
         private double _speed;
         private double _personalSpace;
-        private double _personalSpaceDouble;
     }
 }
