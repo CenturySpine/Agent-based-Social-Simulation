@@ -1,5 +1,5 @@
-﻿using System;
-using SimpleInjector;
+﻿using SimpleInjector;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -15,9 +15,7 @@ namespace SocialSimulation
             base.OnStartup(e);
             Register();
 
-
             _container.GetInstance<Logger>().RegisterListener(ConsoleLog);
-
 
             App.Current.MainWindow = _container.GetInstance<MainWindow>();
             App.Current.MainWindow.Show();
@@ -35,6 +33,7 @@ namespace SocialSimulation
             _container.Register<GlobalSimulationParameters>(Lifestyle.Singleton);
             _container.Register<MovementService>(Lifestyle.Singleton);
             _container.Register<Logger>(Lifestyle.Singleton);
+            _container.Register<CollisionService>(Lifestyle.Singleton);
 
             var behaviors = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => !t.IsInterface && typeof(IEntityBehavior).IsAssignableFrom(t))

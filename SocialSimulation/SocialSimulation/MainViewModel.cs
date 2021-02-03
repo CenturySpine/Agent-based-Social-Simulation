@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace SocialSimulation
         public GlobalSimulationParameters SimulationParams { get; }
         private readonly MovementService _movement;
         private readonly Logger _logger;
+        private readonly CollisionService _collisions;
         private List<Entity> _entities;
         private Timer _moveTimer;
         private Random _rnd;
@@ -23,11 +25,12 @@ namespace SocialSimulation
         private Random _xRnd;
         private Random _yRnd;
 
-        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement, Logger logger)
+        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement, Logger logger, CollisionService collisions)
         {
             SimulationParams = simulationParams;
             _movement = movement;
             _logger = logger;
+            _collisions = collisions;
             SimulationParams.PropertyChanged += SimulationParamsOnPropertyChanged;
 
             GenerateCommand = new RelayCommand(ExecuteGenerate);
@@ -66,14 +69,14 @@ namespace SocialSimulation
 
         private void ChangeDetermination()
         {
-            //lock (_entitiesLock)
-            //{
-            //    foreach (var entity in Entities)
-            //    {
-            //        _logger.Log($"Changing {nameof(SimulationParams.PersonalSpace)} to {SimulationParams.PersonalSpace}");
-            //        entity.Determination = SimulationParams.PersonalSpace;
-            //    }
-            //}
+            lock (_entitiesLock)
+            {
+                foreach (var entity in Entities)
+                {
+                    _logger.Log($"Changing {nameof(SimulationParams.PersonalSpace)} to {SimulationParams.PersonalSpace}");
+                    entity.PersonalSpaceSize = SimulationParams.PersonalSpace;
+                }
+            }
         }
 
         public List<Entity> Entities
@@ -122,7 +125,7 @@ namespace SocialSimulation
                     var ets = new List<Entity>();
                     for (int i = 0; i < SimulationParams.UnitsNumber; i++)
                     {
-                        var e = new Entity() { Id = i + 1, Speed = SimulationParams.Speed, Audacity = SimulationParams.Audacity};
+                        var e = new Entity() { Id = i + 1, Speed = SimulationParams.Speed, Audacity = SimulationParams.Audacity };
 
                         var x = _xRnd.Next(SimulationParams.entitySize, SimulationParams.SurfaceWidth - SimulationParams.entitySize) - SimulationParams.entitySize / 2;
 
@@ -139,7 +142,6 @@ namespace SocialSimulation
                     Entities = ets;
                 }
                 _logger.Log($"Generation completed");
-
             });
         }
 
@@ -174,9 +176,15 @@ namespace SocialSimulation
 
             lock (_entitiesLock)
             {
+                var copy = Entities.ToList();
+                Parallel.ForEach(Entities, e =>
+                {
+                    _movement.Update(e);
+                });
+
                 foreach (var entity in Entities)
                 {
-                    _movement.Update(entity);
+                    _collisions.ComputeCollision(entity, copy);
                 }
             }
         }

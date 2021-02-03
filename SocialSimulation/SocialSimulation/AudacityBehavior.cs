@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace SocialSimulation
 {
@@ -11,8 +10,8 @@ namespace SocialSimulation
         {
             _logger = logger;
         }
-        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random,
-            Dictionary<Entity, MoveData> goalTrack)
+
+        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random/*, Dictionary<Entity, MoveData> goalTrack*/)
         {
             var audacityInfluence = random.NextDouble() < entity.Audacity /*&& (entity.Continuation > entity.PersonalSpace)*/;
 

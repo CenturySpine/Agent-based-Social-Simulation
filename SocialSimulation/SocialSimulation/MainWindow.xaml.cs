@@ -20,7 +20,7 @@ namespace SocialSimulation
 
         private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            ((MainViewModel) DataContext).SetGoal(e.GetPosition((IInputElement) sender));
+            ((MainViewModel)DataContext).SetGoal(e.GetPosition((IInputElement)sender));
         }
     }
 }

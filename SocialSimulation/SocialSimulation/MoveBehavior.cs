@@ -1,76 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Windows;
-using System.Windows.Shapes;
 
 namespace SocialSimulation
 {
-    public interface IDirectionInitiator
-    {
-        Vector2 InitiateDirectionGoal(Entity entity, GlobalSimulationParameters parameters);
-    }
-
-    public class GoalNavigationBehavior : IDirectionInitiator
-    {
-        private readonly Logger _logger;
-
-        public GoalNavigationBehavior(Logger logger)
-        {
-            _logger = logger;
-        }
-
-        public Vector2 InitiateDirectionGoal(Entity entity, GlobalSimulationParameters parameters)
-        {
-            var end = new Vector2(entity.Goal.GoalPosition.X, entity.Goal.GoalPosition.Y);
-            _logger.Log($"Defined goal :{end}");
-            return end;
-        }
-    }
-
-    public class StraightNavigationBehavior : IDirectionInitiator
-    {
-        private readonly Logger _logger;
-
-        public StraightNavigationBehavior(Logger logger)
-        {
-            _logger = logger;
-        }
-
-        public Vector2 InitiateDirectionGoal(Entity entity, GlobalSimulationParameters parameters)
-        {
-            Vector2 end;
-            switch (entity.Direction)
-            {
-                case StartDirection.Left:
-                    //move left = goal is the left border of surface, keeping top position constant
-                    end = new Vector2(0, entity.Position.Y);
-                    break;
-
-                case StartDirection.Top:
-                    //move top = goal is the top border of surface, keeping left position constant
-                    end = new Vector2(entity.Position.X, 0);
-                    break;
-
-                case StartDirection.Right:
-                    //move right = goal is the right border of surface, keeping top position constant
-                    end = new Vector2(parameters.SurfaceWidth - parameters.entitySize, entity.Position.Y);
-                    break;
-
-                case StartDirection.Bottom:
-                    //move bottom = goal is the bottom border of surface, keeping left position constant
-                    end = new Vector2(entity.Position.X, parameters.SurfaceHeight - parameters.entitySize);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            _logger.Log($"Basic goal :{end}");
-            _logger.Log($"Starting to move in straight line");
-            return end;
-        }
-    }
-
     public class MoveBehavior : IEntityBehavior
     {
         private readonly Random _rnd = new Random(DateTime.Now.Millisecond);
@@ -81,7 +13,7 @@ namespace SocialSimulation
             _logger = logger;
         }
 
-        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random, Dictionary<Entity, MoveData> goalTrack)
+        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random/*, Dictionary<Entity, MoveData> goalTrack*/)
         {
             Vector2 start = new Vector2(entity.Position.X, entity.Position.Y);
 
@@ -102,23 +34,21 @@ namespace SocialSimulation
             {
                 Vector2 end = directionInitiator.InitiateDirectionGoal(entity, simulationParams);
 
-
-
                 float distance = Vector2.Distance(start, end);
                 Vector2 direction = Vector2.Normalize(end - start);
 
                 entity.Position = start;
-                goalTrack[entity] = new MoveData { Dir = direction, distance = distance, start = start, end = end };
+                entity.CurrentMoveData = new MoveData { Dir = direction, distance = distance, start = start, end = end };
 
                 entity.IsMovingTowardGoal = MovementType.StraightLine;
 
-                if (float.IsNaN(goalTrack[entity].Dir.X) || float.IsNaN(goalTrack[entity].Dir.Y))
+                if (float.IsNaN(entity.CurrentMoveData.Dir.X) || float.IsNaN(entity.CurrentMoveData.Dir.Y))
                 {
                     //do something
                 }
             }
 
-            Move(entity, goalTrack,simulationParams);
+            Move(entity, simulationParams);
         }
 
         private class DirectionSwitchBounce : IDirectionSwitch
@@ -158,10 +88,10 @@ namespace SocialSimulation
             }
         }
 
-        private void Move(Entity entity, Dictionary<Entity, MoveData> goalTrack,
+        private void Move(Entity entity/*, Dictionary<Entity, MoveData> goalTrack*/,
             GlobalSimulationParameters globalSimulationParameters)
         {
-            MoveData data = goalTrack[entity];
+            MoveData data = entity.CurrentMoveData;
 
             entity.Position = entity.Position
                               + data.Dir //direction
@@ -174,6 +104,16 @@ namespace SocialSimulation
             }
 
             UpdatePersonalSpace(entity, globalSimulationParameters);
+
+            entity.Bound = new BoundBox()
+            {
+                x = (float)entity.PersonalSpaceOrigin.X,
+                y = (float)(entity.PersonalSpaceOrigin.Y),
+                width = entity.PersonalSpaceSize * 2,
+                height = entity.PersonalSpaceSize * 2,
+                //min = new Vector2((float)entity.PersonalSpaceOrigin.X, (float)(entity.PersonalSpaceOrigin.Y + entity.PersonalSpaceSize)),
+                //max = new Vector2((float)(entity.PersonalSpaceOrigin.X + entity.PersonalSpaceSize), (float)(entity.PersonalSpaceOrigin.Y)),
+            };
 
             if (Vector2.Distance(data.start, entity.Position) >= data.distance)
             {
@@ -201,8 +141,7 @@ namespace SocialSimulation
 
         public static void UpdatePersonalSpace(Entity entity, GlobalSimulationParameters para)
         {
-            var topleft = new Vector2(entity.Position.X+para.entitySize/2 - (float)entity.PersonalSpaceSize, entity.Position.Y + para.entitySize / 2 - (float)entity.PersonalSpaceSize);
-
+            var topleft = new Vector2(entity.Position.X + para.entitySize / 2 - (float)entity.PersonalSpaceSize, entity.Position.Y + para.entitySize / 2 - (float)entity.PersonalSpaceSize);
 
             entity.PersonalSpaceOrigin = topleft;
         }

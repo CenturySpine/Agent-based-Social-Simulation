@@ -1,5 +1,6 @@
-﻿using System.Numerics;
-using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 
 namespace SocialSimulation
 {
@@ -9,8 +10,12 @@ namespace SocialSimulation
         {
             Goal = new Goal();
         }
+
         private Vector2 _position;
         private Vector2 _personalSpaceOrigin;
+        private List<Entity> _collidingEntities;
+        private bool _isColliding;
+        private double _personalSpaceSize;
         public int Id { get; set; }
         public int Initiative { get; set; }
 
@@ -37,6 +42,30 @@ namespace SocialSimulation
 
         public Goal Goal { get; set; }
         public MovementType IsMovingTowardGoal { get; set; }
-        public double PersonalSpaceSize { get; set; }
+
+        public double PersonalSpaceSize
+        {
+            get => _personalSpaceSize;
+            set { _personalSpaceSize = value; OnPropertyChanged(); }
+        }
+
+        public MoveData CurrentMoveData { get; set; }
+        public BoundBox Bound { get; set; }
+
+        public bool IsColliding
+        {
+            get => _isColliding;
+            set { _isColliding = value; OnPropertyChanged(); }
+        }
+
+        public List<Entity> CollidingEntities
+        {
+            get => _collidingEntities;
+            set
+            {
+                _collidingEntities = value;
+                IsColliding = value.Any();
+            }
+        }
     }
 }
