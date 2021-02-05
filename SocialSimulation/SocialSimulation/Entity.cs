@@ -16,8 +16,8 @@ namespace SocialSimulation
         private List<Entity> _collidingEntities;
         private bool _isColliding;
         private double _personalSpaceSize;
+        private EntityState _state;
         public int Id { get; set; }
-        public int Initiative { get; set; }
 
         public Vector2 Position
         {
@@ -29,6 +29,12 @@ namespace SocialSimulation
         {
             get => _personalSpaceOrigin;
             set { _personalSpaceOrigin = value; OnPropertyChanged(); }
+        }
+
+        public EntityState State
+        {
+            get => _state;
+            set { _state = value; OnPropertyChanged(); }
         }
 
         public StartDirection Direction { get; set; }
@@ -69,5 +75,9 @@ namespace SocialSimulation
         }
 
         public int SelfSize { get; set; }
+
+        public float NeedForSociability { get; set; }
+
+        public float Charisma { get; set; }
     }
 }

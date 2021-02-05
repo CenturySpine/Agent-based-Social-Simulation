@@ -11,9 +11,9 @@ namespace SocialSimulation
             _logger = logger;
         }
 
-        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random/*, Dictionary<Entity, MoveData> goalTrack*/)
+        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random)
         {
-            var audacityInfluence = random.NextDouble() < entity.Audacity /*&& (entity.Continuation > entity.PersonalSpace)*/;
+            var audacityInfluence = random.NextDouble() < entity.Audacity ;
 
             if (audacityInfluence && entity.Goal == null)
             {
@@ -24,12 +24,8 @@ namespace SocialSimulation
                 }
                 //_logger.Log($"Entity {entity.Id} changed direction from {entity.Direction} to {newDir}");
                 entity.Direction = newDir;
-                //entity.Continuation = 0.0;
+                
                 entity.IsMovingTowardGoal = MovementType.Stopped;
-            }
-            else
-            {
-                //entity.Continuation += 0.05;
             }
         }
     }
