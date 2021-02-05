@@ -12,10 +12,10 @@ namespace SocialSimulation
             _logger = logger;
         }
 
-        public Vector2 InitiateDirectionGoal(Entity entity, GlobalSimulationParameters parameters)
+        public Vector2 InitiateDirectionGoal(Entity.Entity entity, GlobalSimulationParameters parameters)
         {
             Vector2 end;
-            switch (entity.Direction)
+            switch (entity.Movement.Direction)
             {
                 case StartDirection.Left:
                     //move left = goal is the left border of surface, keeping top position constant

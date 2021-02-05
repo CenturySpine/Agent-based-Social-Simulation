@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using SocialSimulation.Entity;
 
 namespace SocialSimulation
 {
@@ -17,7 +18,7 @@ namespace SocialSimulation
         private readonly Logger _logger;
         private readonly CollisionService _collisions;
         private readonly InteractionService _interactService;
-        private List<Entity> _entities;
+        private List<Entity.Entity> _entities;
         private Timer _moveTimer;
         private Random _rnd;
 
@@ -39,7 +40,7 @@ namespace SocialSimulation
             StartMoveCommand = new RelayCommand(ExecuteStartMove);
             StopMoveCommand = new RelayCommand(ExecuteStopMove);
 
-            Entities = new List<Entity>();
+            Entities = new List<Entity.Entity>();
             Logs = new ObservableCollection<string>();
 
             _logger.RegisterListener(InternalLog);
@@ -76,12 +77,12 @@ namespace SocialSimulation
                 foreach (var entity in Entities)
                 {
                     _logger.Log($"Changing {nameof(SimulationParams.PersonalSpace)} to {SimulationParams.PersonalSpace}");
-                    entity.PersonalSpaceSize = SimulationParams.PersonalSpace;
+                    entity.PersonalSpace.Size = SimulationParams.PersonalSpace;
                 }
             }
         }
 
-        public List<Entity> Entities
+        public List<Entity.Entity> Entities
         {
             get => _entities;
             private set { _entities = value; OnPropertyChanged(); }
@@ -112,7 +113,7 @@ namespace SocialSimulation
                 foreach (var entity in Entities)
                 {
                     _logger.Log($"Changing {nameof(SimulationParams.Speed)} to {SimulationParams.Speed}");
-                    entity.Speed = SimulationParams.Speed;
+                    entity.Movement.Speed = SimulationParams.Speed;
                 }
             }
         }
@@ -124,20 +125,26 @@ namespace SocialSimulation
                 lock (_entitiesLock)
                 {
                     Entities.Clear();
-                    var ets = new List<Entity>();
+                    var ets = new List<Entity.Entity>();
                     for (int i = 0; i < SimulationParams.UnitsNumber; i++)
                     {
-                        var e = new Entity() { Id = i + 1, Speed = SimulationParams.Speed, Audacity = SimulationParams.Audacity, SelfSize = SimulationParams.EntitySize };
-
+                        var e = new Entity.Entity() { Id = i + 1, Audacity = SimulationParams.Audacity, SelfSize = SimulationParams.EntitySize };
+                        e.Movement.Speed = SimulationParams.Speed;
                         var x = _xRnd.Next(e.SelfSize, SimulationParams.SurfaceWidth - e.SelfSize) - e.SelfSize / 2;
 
                         var y = _yRnd.Next(e.SelfSize, SimulationParams.SurfaceHeight - e.SelfSize) - e.SelfSize / 2;
 
-                        e.Direction = (StartDirection)_rnd.Next(0, 4);
+                        e.Movement.Direction = (StartDirection)_rnd.Next(0, 4);
                         e.Position = new Vector2(x, y);
-                        e.Charisma = (float) _rnd.NextDouble();
-                        e.NeedForSociability= (float)_rnd.NextDouble();
-                        e.PersonalSpaceSize = SimulationParams.PersonalSpace;
+
+
+                        e.Social.Charisma = (float)_rnd.NextDouble();
+                        e.Social.NeedForSociability = (float)_rnd.NextDouble();
+                        e.Social.SocialLatencyThreshold = _rnd.Next(20, 80);
+                        e.Social.CurrentSocialLatency = e.Social.SocialLatencyThreshold;
+                        e.Social.SocialLatencyRecoveryRate = 0.005f;
+
+                        e.PersonalSpace.Size = SimulationParams.PersonalSpace;
                         MoveBehavior.UpdatePersonalSpace(e);
                         e.Goal = null;
                         ets.Add(e);
@@ -153,9 +160,9 @@ namespace SocialSimulation
         {
             _logger.Log($"Starting movement");
             _stopped = false;
-            Entities.ForEach(e=>e.State = EntityState.Moving);
+            Entities.ForEach(e => e.State = EntityState.Moving);
             _moveTimer = new Timer(OnUpdateEntities, null, 1000, 16);
-            
+
         }
 
         private void ExecuteStopMove(object o)
@@ -186,6 +193,7 @@ namespace SocialSimulation
                 Parallel.ForEach(Entities, e =>
                 {
                     _movement.Update(e);
+                    _interactService.UpdateSocialLatency(e);
                 });
 
                 foreach (var entity in Entities)
@@ -206,8 +214,8 @@ namespace SocialSimulation
             {
                 foreach (var entity in Entities)
                 {
-                    entity.Goal = new Goal() { GoalPosition = new Vector2((float)getPosition.X , (float)getPosition.Y ) };
-                    entity.IsMovingTowardGoal = MovementType.TowardGoal;
+                    entity.Goal = new Goal() { GoalPosition = new Vector2((float)getPosition.X, (float)getPosition.Y) };
+                    entity.MovementType = MovementType.TowardGoal;
                 }
             }
         }

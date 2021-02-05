@@ -4,6 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocialSimulation"
+        xmlns:entity="clr-namespace:SocialSimulation.Entity"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance {x:Type local:MainViewModel}}"
         Title="MainWindow" Height="450" Width="800" MouseMove="MainWindow_OnMouseMove">
@@ -52,7 +53,19 @@
                             </Canvas.Style>
                             <TextBlock Text="{Binding Id}" Canvas.Top="5" Canvas.Left="5" Margin="1,1" FontFamily="Courier New" FontSize="14" Foreground="Red" FontWeight="Bold"></TextBlock>
                             <Ellipse Width="10" Height="10" Fill="Black" Canvas.Top="0" Canvas.Left="0" />
-                            <!--<Border Width="20" Height="20" BorderBrush="LightGray" Margin="-5" BorderThickness="0.5"></Border>-->
+                            <Border Canvas.Top="-30" Canvas.Left="-30" Background="White">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding State}" Value="{x:Static entity:EntityState.Talking}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="blah"></TextBlock>
+                            </Border>
                         </Canvas>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -74,25 +87,41 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style TargetType="{x:Type ContentPresenter}">
-                        <Setter Property="Canvas.Top" Value="{Binding PersonalSpaceOrigin, Converter={StaticResource vtp},ConverterParameter='y'}" />
-                        <Setter Property="Canvas.Left" Value="{Binding PersonalSpaceOrigin,Converter={StaticResource vtp}, ConverterParameter='x'}" />
+                        <Setter Property="Canvas.Top" Value="{Binding PersonalSpace.Origin, Converter={StaticResource vtp},ConverterParameter='y'}" />
+                        <Setter Property="Canvas.Left" Value="{Binding PersonalSpace.Origin,Converter={StaticResource vtp}, ConverterParameter='x'}" />
                     </Style>
                 </ItemsControl.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="DarkOrange" BorderThickness="1" HorizontalAlignment="Stretch"
-                                Width="{Binding PersonalSpaceSize,Converter={StaticResource psCv}}"
-                                Height="{Binding PersonalSpaceSize, Converter={StaticResource psCv}}">
+                        <Border BorderBrush="DarkOrange" BorderThickness="1" HorizontalAlignment="Stretch" 
+                                Width="{Binding PersonalSpace.Size,Converter={StaticResource psCv}}"
+                                Height="{Binding PersonalSpace.Size, Converter={StaticResource psCv}}">
                             <Border.Style>
                                 <Style TargetType="{x:Type Border}">
                                     <Setter Property="Background" Value="Transparent"></Setter>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsColliding}" Value="true">
-                                            <Setter Property="Background" Value="Beige"></Setter>
+                                            <Setter Property="Background" >
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="Beige" Opacity="0.5"></SolidColorBrush>
+                                                </Setter.Value>
+                                            </Setter>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding Social.SocialLatencyThreshold}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="10"></TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Social.CurrentSocialLatency, StringFormat={}{0:#,#.0}}" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="10"></TextBlock>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

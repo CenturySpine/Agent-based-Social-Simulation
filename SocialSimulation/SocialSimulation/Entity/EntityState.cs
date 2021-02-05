@@ -1,4 +1,4 @@
-﻿namespace SocialSimulation
+﻿namespace SocialSimulation.Entity
 {
     public enum EntityState
     {

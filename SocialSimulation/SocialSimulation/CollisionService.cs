@@ -5,11 +5,11 @@ namespace SocialSimulation
 {
     public class CollisionService
     {
-        public void ComputeCollision(Entity entity, List<Entity> copy)
+        public void ComputeCollision(Entity.Entity entity, List<Entity.Entity> copy)
         {
             var collidingOthers =
                 copy.Where(c => c != entity)
-                    .Where(o => Collide(entity.Bound, o.Bound))
+                    .Where(o => Collide(entity.PersonalSpace.Bound, o.PersonalSpace.Bound))
                     .ToList();
 
             entity.CollidingEntities = collidingOthers;

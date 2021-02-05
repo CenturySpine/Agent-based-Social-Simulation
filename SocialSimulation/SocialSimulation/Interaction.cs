@@ -11,10 +11,11 @@ namespace SocialSimulation
 
         public event InteractionTerminatedEventHandler InteractionEnded;
 
-        public Interaction(Entity entitySource, Entity entityTarget, float interactionIntensity)
+        public Interaction(Entity.Entity entitySource, Entity.Entity entityTarget, float interactionIntensity)
         {
             Entity1 = entitySource;
             Entity2 = entityTarget;
+            Entity1.Social.CurrentSocialLatency = Entity2.Social.CurrentSocialLatency = 0.0f;
             var duration = (int)Math.Round(interactionIntensity * 10, MidpointRounding.AwayFromZero);
             if (duration < 2) duration = 2;
             _timer = new Timer(InteractionEnd, duration, duration * 1000, Timeout.Infinite);
@@ -32,8 +33,8 @@ namespace SocialSimulation
             OnInteractionEnded();
         }
 
-        public Entity Entity1 { get; }
-        public Entity Entity2 { get; }
+        public Entity.Entity Entity1 { get; }
+        public Entity.Entity Entity2 { get; }
 
         protected virtual void OnInteractionEnded()
         {

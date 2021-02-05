@@ -4,6 +4,6 @@ namespace SocialSimulation
 {
     public interface IEntityBehavior
     {
-        void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random);
+        void Behave(Entity.Entity entity, GlobalSimulationParameters simulationParams, Random random);
     }
 }

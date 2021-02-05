@@ -11,7 +11,7 @@ namespace SocialSimulation
             _logger = logger;
         }
 
-        public Vector2 InitiateDirectionGoal(Entity entity, GlobalSimulationParameters parameters)
+        public Vector2 InitiateDirectionGoal(Entity.Entity entity, GlobalSimulationParameters parameters)
         {
             var end = new Vector2(entity.Goal.GoalPosition.X, entity.Goal.GoalPosition.Y);
             _logger.Log($"Defined goal :{end}");

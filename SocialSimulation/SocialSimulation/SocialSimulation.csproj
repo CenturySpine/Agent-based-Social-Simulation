@@ -65,8 +65,11 @@
     <Compile Include="AudacityBehavior.cs" />
     <Compile Include="BoundBox.cs" />
     <Compile Include="CollisionService.cs" />
-    <Compile Include="Entity.cs" />
-    <Compile Include="EntityState.cs" />
+    <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Entity\EntityState.cs" />
+    <Compile Include="Entity\Movement.cs" />
+    <Compile Include="Entity\PersonalSpace.cs" />
+    <Compile Include="Entity\Social.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="EventRaiser.cs" />
     <Compile Include="GlobalSimulationParameters.cs" />
@@ -87,6 +90,7 @@
     <Compile Include="MovementType.cs" />
     <Compile Include="PersonalSpaceUnitToSurfaceConverter.cs" />
     <Compile Include="RelayCommand.cs" />
+    <Compile Include="SimLoopData.cs" />
     <Compile Include="StartDirection.cs" />
     <Compile Include="StraightNavigationBehavior.cs" />
     <Compile Include="Vector2ToPointConverter.cs" />
@@ -132,5 +136,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

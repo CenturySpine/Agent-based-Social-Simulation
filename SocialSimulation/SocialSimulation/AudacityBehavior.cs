@@ -11,21 +11,21 @@ namespace SocialSimulation
             _logger = logger;
         }
 
-        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random)
+        public void Behave(Entity.Entity entity, GlobalSimulationParameters simulationParams, Random random)
         {
             var audacityInfluence = random.NextDouble() < entity.Audacity ;
 
             if (audacityInfluence && entity.Goal == null)
             {
-                var newDir = entity.Direction;
-                while (newDir == entity.Direction)
+                var newDir = entity.Movement.Direction;
+                while (newDir == entity.Movement.Direction)
                 {
                     newDir = (StartDirection)random.Next(0, 4);
                 }
                 //_logger.Log($"Entity {entity.Id} changed direction from {entity.Direction} to {newDir}");
-                entity.Direction = newDir;
+                entity.Movement.Direction = newDir;
                 
-                entity.IsMovingTowardGoal = MovementType.Stopped;
+                entity.MovementType = MovementType.Stopped;
             }
         }
     }

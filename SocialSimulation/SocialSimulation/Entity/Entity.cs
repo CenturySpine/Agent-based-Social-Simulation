@@ -2,21 +2,28 @@
 using System.Linq;
 using System.Numerics;
 
-namespace SocialSimulation
+namespace SocialSimulation.Entity
 {
     public class Entity : NotifierBase
     {
         public Entity()
         {
             Goal = new Goal();
+            Movement = new Movement();
+            PersonalSpace = new PersonalSpace();
+            Social = new Social();
         }
 
+        public Social Social { get; }
+        public Movement Movement { get; }
+        public PersonalSpace PersonalSpace { get; }
         private Vector2 _position;
-        private Vector2 _personalSpaceOrigin;
+
         private List<Entity> _collidingEntities;
         private bool _isColliding;
-        private double _personalSpaceSize;
+
         private EntityState _state;
+        private MovementType _storedMoveType;
         public int Id { get; set; }
 
         public Vector2 Position
@@ -25,21 +32,11 @@ namespace SocialSimulation
             set { _position = value; OnPropertyChanged(); }
         }
 
-        public Vector2 PersonalSpaceOrigin
-        {
-            get => _personalSpaceOrigin;
-            set { _personalSpaceOrigin = value; OnPropertyChanged(); }
-        }
-
         public EntityState State
         {
             get => _state;
             set { _state = value; OnPropertyChanged(); }
         }
-
-        public StartDirection Direction { get; set; }
-
-        public double Speed { get; set; }
 
         public double Audacity { get; set; }
 
@@ -47,16 +44,7 @@ namespace SocialSimulation
         public double Continuation { get; set; }
 
         public Goal Goal { get; set; }
-        public MovementType IsMovingTowardGoal { get; set; }
-
-        public double PersonalSpaceSize
-        {
-            get => _personalSpaceSize;
-            set { _personalSpaceSize = value; OnPropertyChanged(); }
-        }
-
-        public MoveData CurrentMoveData { get; set; }
-        public BoundBox Bound { get; set; }
+        public MovementType MovementType { get; set; }
 
         public bool IsColliding
         {
@@ -76,8 +64,13 @@ namespace SocialSimulation
 
         public int SelfSize { get; set; }
 
-        public float NeedForSociability { get; set; }
-
-        public float Charisma { get; set; }
+        public void RegisterCurrentMovement()
+        {
+            _storedMoveType = MovementType;
+        }
+        public void ResumeMovement()
+        {
+            MovementType= _storedMoveType;
+        }
     }
 }

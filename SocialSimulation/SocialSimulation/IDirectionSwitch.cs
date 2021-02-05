@@ -4,6 +4,6 @@ namespace SocialSimulation
 {
     internal interface IDirectionSwitch
     {
-        void Switch(Entity e, Random rnd);
+        void Switch(Entity.Entity e, Random rnd);
     }
 }

@@ -27,7 +27,7 @@ namespace SocialSimulation
             };
         }
 
-        public void Update(Entity entity)
+        public void Update(Entity.Entity entity)
         {
             foreach (var entityBehavior in _behaviors.Select(b => b()))
             {
