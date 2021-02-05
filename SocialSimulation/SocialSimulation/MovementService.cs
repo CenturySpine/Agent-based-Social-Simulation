@@ -9,17 +9,17 @@ namespace SocialSimulation
     {
         private readonly GlobalSimulationParameters _simParams;
         private readonly Logger _logger;
+        private readonly InteractionService _interactService;
 
         private readonly List<Func<IEntityBehavior>> _behaviors;
         private readonly Random _rnd = new Random(DateTime.Now.Millisecond);
-        //private readonly Dictionary<Entity, MoveData> _goalTrack;
-        //private object _trackLock = new object();
 
-        public MovementService(GlobalSimulationParameters simParams, Container container, Logger logger)
+        public MovementService(GlobalSimulationParameters simParams, Container container, Logger logger, InteractionService interactService)
         {
             _simParams = simParams;
             _logger = logger;
-            //_goalTrack = new Dictionary<Entity, MoveData>();
+            _interactService = interactService;
+
             _behaviors = new List<Func<IEntityBehavior>>
             {
                 container.GetInstance<AudacityBehavior>,
@@ -31,10 +31,7 @@ namespace SocialSimulation
         {
             foreach (var entityBehavior in _behaviors.Select(b => b()))
             {
-                //lock (_trackLock)
-                //{
-                entityBehavior.Behave(entity, _simParams, _rnd/*, _goalTrack*/);
-                //}
+                entityBehavior.Behave(entity, _simParams, _rnd);
             }
         }
     }

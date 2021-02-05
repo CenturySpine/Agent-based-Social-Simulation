@@ -66,6 +66,7 @@
     <Compile Include="BoundBox.cs" />
     <Compile Include="CollisionService.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="EntityState.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="EventRaiser.cs" />
     <Compile Include="GlobalSimulationParameters.cs" />
@@ -74,6 +75,11 @@
     <Compile Include="IDirectionInitiator.cs" />
     <Compile Include="IDirectionSwitch.cs" />
     <Compile Include="IEntityBehavior.cs" />
+    <Compile Include="IEntityInteractionBehavior.cs" />
+    <Compile Include="Interaction.cs" />
+    <Compile Include="InteractionBehavior.cs" />
+    <Compile Include="InteractionService.cs" />
+    <Compile Include="InteractionTerminatedEventHandler.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MoveBehavior.cs" />
     <Compile Include="MoveData.cs" />

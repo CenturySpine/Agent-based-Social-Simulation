@@ -19,7 +19,7 @@ namespace SocialSimulation
             {
                 foreach (var listener in _listeners)
                 {
-                    listener(message);
+                    listener($"{DateTime.Now:hh.mm.ss.ffff} - {message}");
                 }
             }
         }

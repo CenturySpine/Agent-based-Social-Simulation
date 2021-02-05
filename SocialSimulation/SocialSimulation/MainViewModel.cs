@@ -16,6 +16,7 @@ namespace SocialSimulation
         private readonly MovementService _movement;
         private readonly Logger _logger;
         private readonly CollisionService _collisions;
+        private readonly InteractionService _interactService;
         private List<Entity> _entities;
         private Timer _moveTimer;
         private Random _rnd;
@@ -25,12 +26,13 @@ namespace SocialSimulation
         private Random _xRnd;
         private Random _yRnd;
 
-        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement, Logger logger, CollisionService collisions)
+        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement, Logger logger, CollisionService collisions, InteractionService interactService)
         {
             SimulationParams = simulationParams;
             _movement = movement;
             _logger = logger;
             _collisions = collisions;
+            _interactService = interactService;
             SimulationParams.PropertyChanged += SimulationParamsOnPropertyChanged;
 
             GenerateCommand = new RelayCommand(ExecuteGenerate);
@@ -133,6 +135,8 @@ namespace SocialSimulation
 
                         e.Direction = (StartDirection)_rnd.Next(0, 4);
                         e.Position = new Vector2(x, y);
+                        e.Charisma = (float) _rnd.NextDouble();
+                        e.NeedForSociability= (float)_rnd.NextDouble();
                         e.PersonalSpaceSize = SimulationParams.PersonalSpace;
                         MoveBehavior.UpdatePersonalSpace(e, SimulationParams);
                         e.Goal = null;
@@ -149,7 +153,9 @@ namespace SocialSimulation
         {
             _logger.Log($"Starting movement");
             _stopped = false;
+            Entities.ForEach(e=>e.State = EntityState.Moving);
             _moveTimer = new Timer(OnUpdateEntities, null, 1000, 16);
+            
         }
 
         private void ExecuteStopMove(object o)
@@ -186,6 +192,11 @@ namespace SocialSimulation
                 {
                     _collisions.ComputeCollision(entity, copy);
                 }
+
+                foreach (var entity in Entities.Where(e => e.CollidingEntities.Any()))
+                {
+                    entity.CollidingEntities.ForEach((e) => _interactService.Interact(entity, e, _rnd));
+                }
             }
         }
 
@@ -195,7 +206,7 @@ namespace SocialSimulation
             {
                 foreach (var entity in Entities)
                 {
-                    entity.Goal = new Goal() { GoalPosition = new Vector2((float)getPosition.X /*- SimulationParams.entitySize / 2*/, (float)getPosition.Y /*- SimulationParams.entitySize / 2*/) };
+                    entity.Goal = new Goal() { GoalPosition = new Vector2((float)getPosition.X , (float)getPosition.Y ) };
                     entity.IsMovingTowardGoal = MovementType.TowardGoal;
                 }
             }

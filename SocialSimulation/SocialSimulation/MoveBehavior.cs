@@ -7,48 +7,55 @@ namespace SocialSimulation
     {
         private readonly Random _rnd = new Random(DateTime.Now.Millisecond);
         private readonly Logger _logger;
+        private readonly InteractionService _interactionService;
 
-        public MoveBehavior(Logger logger)
+        public MoveBehavior(Logger logger, InteractionService interactionService)
         {
             _logger = logger;
+            _interactionService = interactionService;
         }
 
-        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random/*, Dictionary<Entity, MoveData> goalTrack*/)
+        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random)
         {
-            Vector2 start = new Vector2(entity.Position.X, entity.Position.Y);
-
-            IDirectionInitiator directionInitiator = null;
-            if (entity.IsMovingTowardGoal == MovementType.Stopped)
+            if (entity.State == EntityState.Moving)
             {
-                _logger.Log("Defining basic - straight line - goal... ");
+                Vector2 start = new Vector2(entity.Position.X, entity.Position.Y);
 
-                directionInitiator = new StraightNavigationBehavior(_logger);
-            }
-            else if (entity.IsMovingTowardGoal == MovementType.TowardGoal && entity.Goal != null)
-            {
-                _logger.Log("Defining goal... ");
-                directionInitiator = new GoalNavigationBehavior(_logger);
-            }
-
-            if (directionInitiator != null)
-            {
-                Vector2 end = directionInitiator.InitiateDirectionGoal(entity, simulationParams);
-
-                float distance = Vector2.Distance(start, end);
-                Vector2 direction = Vector2.Normalize(end - start);
-
-                entity.Position = start;
-                entity.CurrentMoveData = new MoveData { Dir = direction, distance = distance, start = start, end = end };
-
-                entity.IsMovingTowardGoal = MovementType.StraightLine;
-
-                if (float.IsNaN(entity.CurrentMoveData.Dir.X) || float.IsNaN(entity.CurrentMoveData.Dir.Y))
+                IDirectionInitiator directionInitiator = null;
+                if (entity.IsMovingTowardGoal == MovementType.Stopped)
                 {
-                    //do something
-                }
-            }
 
-            Move(entity, simulationParams);
+                    _logger.Log("Defining basic - straight line - goal... ");
+
+                    directionInitiator = new StraightNavigationBehavior(_logger);
+
+                }
+                else if (entity.IsMovingTowardGoal == MovementType.TowardGoal && entity.Goal != null)
+                {
+                    _logger.Log("Defining goal... ");
+                    directionInitiator = new GoalNavigationBehavior(_logger);
+                }
+
+                if (directionInitiator != null)
+                {
+                    Vector2 end = directionInitiator.InitiateDirectionGoal(entity, simulationParams);
+
+                    float distance = Vector2.Distance(start, end);
+                    Vector2 direction = Vector2.Normalize(end - start);
+
+                    entity.Position = start;
+                    entity.CurrentMoveData = new MoveData { Dir = direction, distance = distance, start = start, end = end };
+
+                    entity.IsMovingTowardGoal = MovementType.StraightLine;
+
+                    if (float.IsNaN(entity.CurrentMoveData.Dir.X) || float.IsNaN(entity.CurrentMoveData.Dir.Y))
+                    {
+                        //do something
+                    }
+                }
+
+                Move(entity, simulationParams);
+            }
         }
 
         private class DirectionSwitchBounce : IDirectionSwitch
@@ -88,10 +95,12 @@ namespace SocialSimulation
             }
         }
 
-        private void Move(Entity entity/*, Dictionary<Entity, MoveData> goalTrack*/,
-            GlobalSimulationParameters globalSimulationParameters)
+        private void Move(Entity entity, GlobalSimulationParameters globalSimulationParameters)
         {
             MoveData data = entity.CurrentMoveData;
+
+            if (data == null)
+                return;
 
             entity.Position = entity.Position
                               + data.Dir //direction
@@ -105,14 +114,12 @@ namespace SocialSimulation
 
             UpdatePersonalSpace(entity, globalSimulationParameters);
 
-            entity.Bound = new BoundBox()
+            entity.Bound = new BoundBox
             {
                 x = (float)entity.PersonalSpaceOrigin.X,
                 y = (float)(entity.PersonalSpaceOrigin.Y),
                 width = entity.PersonalSpaceSize * 2,
                 height = entity.PersonalSpaceSize * 2,
-                //min = new Vector2((float)entity.PersonalSpaceOrigin.X, (float)(entity.PersonalSpaceOrigin.Y + entity.PersonalSpaceSize)),
-                //max = new Vector2((float)(entity.PersonalSpaceOrigin.X + entity.PersonalSpaceSize), (float)(entity.PersonalSpaceOrigin.Y)),
             };
 
             if (Vector2.Distance(data.start, entity.Position) >= data.distance)

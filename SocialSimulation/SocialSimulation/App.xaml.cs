@@ -34,6 +34,7 @@ namespace SocialSimulation
             _container.Register<MovementService>(Lifestyle.Singleton);
             _container.Register<Logger>(Lifestyle.Singleton);
             _container.Register<CollisionService>(Lifestyle.Singleton);
+            _container.Register<InteractionService>(Lifestyle.Singleton);
 
             var behaviors = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => !t.IsInterface && typeof(IEntityBehavior).IsAssignableFrom(t))
