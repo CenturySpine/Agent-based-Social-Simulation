@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Linq;
+using System.Numerics;
 
 namespace SocialSimulation
 {
@@ -13,9 +14,15 @@ namespace SocialSimulation
 
         public Vector2 InitiateDirectionGoal(Entity.Entity entity, GlobalSimulationParameters parameters)
         {
-            var end = new Vector2(entity.Goal.GoalPosition.X, entity.Goal.GoalPosition.Y);
-            _logger.Log($"Defined goal :{end}");
-            return end;
+            if (entity.Goals.Any())
+            {
+                var g = entity.Goals.First();
+                var end = new Vector2(g.GoalPosition.X, g.GoalPosition.Y);
+                _logger.Log($"Defined goal :{end}");
+                return end;
+            }
+
+            return Vector2.Zero;
         }
     }
 }

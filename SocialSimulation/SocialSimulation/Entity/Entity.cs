@@ -8,7 +8,7 @@ namespace SocialSimulation.Entity
     {
         public Entity()
         {
-            Goal = new Goal();
+            Goals = new List<Goal>();
             Movement = new Movement();
             PersonalSpace = new PersonalSpace();
             Social = new Social();
@@ -43,9 +43,9 @@ namespace SocialSimulation.Entity
         public double Determination { get; set; }
         public double Continuation { get; set; }
 
-        public Goal Goal { get; set; }
+        public List<Goal> Goals { get; set; }
         public MovementType MovementType { get; set; }
-
+        public Goal CurrentGoal { get; set; }
         public bool IsColliding
         {
             get => _isColliding;

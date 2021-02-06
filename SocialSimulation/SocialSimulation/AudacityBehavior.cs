@@ -15,7 +15,7 @@ namespace SocialSimulation
         {
             var audacityInfluence = random.NextDouble() < entity.Audacity ;
 
-            if (audacityInfluence && entity.Goal == null)
+            if (audacityInfluence && entity.CurrentGoal == null)
             {
                 var newDir = entity.Movement.Direction;
                 while (newDir == entity.Movement.Direction)

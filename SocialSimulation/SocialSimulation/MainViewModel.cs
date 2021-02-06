@@ -128,7 +128,7 @@ namespace SocialSimulation
                     var ets = new List<Entity.Entity>();
                     for (int i = 0; i < SimulationParams.UnitsNumber; i++)
                     {
-                        var e = new Entity.Entity() { Id = i + 1, Audacity = SimulationParams.Audacity, SelfSize = SimulationParams.EntitySize };
+                        var e = new Entity.Entity { Id = i + 1, Audacity = SimulationParams.Audacity, SelfSize = SimulationParams.EntitySize };
                         e.Movement.Speed = SimulationParams.Speed;
                         var x = _xRnd.Next(e.SelfSize, SimulationParams.SurfaceWidth - e.SelfSize) - e.SelfSize / 2;
 
@@ -146,7 +146,7 @@ namespace SocialSimulation
 
                         e.PersonalSpace.Size = SimulationParams.PersonalSpace;
                         MoveBehavior.UpdatePersonalSpace(e);
-                        e.Goal = null;
+                        
                         ets.Add(e);
                     }
 
@@ -214,7 +214,13 @@ namespace SocialSimulation
             {
                 foreach (var entity in Entities)
                 {
-                    entity.Goal = new Goal() { GoalPosition = new Vector2((float)getPosition.X, (float)getPosition.Y) };
+                    var addedGoal = new Goal { GoalPosition = new Vector2((float)getPosition.X, (float)getPosition.Y) };
+                    entity.Goals.Add(addedGoal);
+                    if (entity.CurrentGoal == null)
+                    {
+                        entity.CurrentGoal = addedGoal;
+
+                    }
                     entity.MovementType = MovementType.TowardGoal;
                 }
             }

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using SocialSimulation.Entity;
+using System;
+using System.Linq;
 using System.Numerics;
-using SocialSimulation.Entity;
 
 namespace SocialSimulation
 {
@@ -23,13 +24,11 @@ namespace SocialSimulation
                 IDirectionInitiator directionInitiator = null;
                 if (entity.MovementType == MovementType.Stopped)
                 {
-
                     _logger.Log("Defining basic - straight line - goal... ");
 
                     directionInitiator = new StraightNavigationBehavior(_logger);
-
                 }
-                else if (entity.MovementType == MovementType.TowardGoal && entity.Goal != null)
+                else if (entity.MovementType == MovementType.TowardGoal && entity.CurrentGoal != null)
                 {
                     _logger.Log("Defining goal... ");
                     directionInitiator = new GoalNavigationBehavior(_logger);
@@ -38,18 +37,20 @@ namespace SocialSimulation
                 if (directionInitiator != null)
                 {
                     Vector2 end = directionInitiator.InitiateDirectionGoal(entity, simulationParams);
-
-                    float distance = Vector2.Distance(start, end);
-                    Vector2 direction = Vector2.Normalize(end - start);
-
-                    entity.Position = start;
-                    entity.Movement.CurrentMoveData = new MoveData { Dir = direction, distance = distance, start = start, end = end };
-
-                    entity.MovementType = MovementType.StraightLine;
-
-                    if (float.IsNaN(entity.Movement.CurrentMoveData.Dir.X) || float.IsNaN(entity.Movement.CurrentMoveData.Dir.Y))
+                    if (end != Vector2.Zero)
                     {
-                        //do something
+                        float distance = Vector2.Distance(start, end);
+                        Vector2 direction = Vector2.Normalize(end - start);
+
+                        entity.Position = start;
+                        entity.Movement.CurrentMoveData = new MoveData { Dir = direction, distance = distance, start = start, end = end };
+
+                        entity.MovementType = MovementType.StraightLine;
+
+                        if (float.IsNaN(entity.Movement.CurrentMoveData.Dir.X) || float.IsNaN(entity.Movement.CurrentMoveData.Dir.Y))
+                        {
+                            //do something
+                        }
                     }
                 }
 
@@ -115,23 +116,36 @@ namespace SocialSimulation
             {
                 entity.Position = data.end;
 
-                IDirectionSwitch switchBehavior;
-                if (entity.Goal != null)
+                IDirectionSwitch switchBehavior = null;
+                if (entity.CurrentGoal != null)
                 {
                     _logger.Log("Goal reached!!!");
 
-                    entity.Goal = null;
-                    switchBehavior = new DirectionSwitchRandom();
+                    entity.Goals.Remove(entity.CurrentGoal);
+                    entity.CurrentGoal = null;
+                    
+                    if (entity.Goals.Any())
+                    {
+                        entity.CurrentGoal = entity.Goals.First();
+                        entity.MovementType = MovementType.TowardGoal;
+                    }
+                    else
+                    {
+                        switchBehavior = new DirectionSwitchRandom();
+                        entity.MovementType = MovementType.Stopped;
+                    }
+                    
                 }
                 else
                 {
                     _logger.Log("End of the line");
                     switchBehavior = new DirectionSwitchBounce();
+                    entity.MovementType = MovementType.Stopped;
                 }
 
                 //trigger goal definition on next loop
-                entity.MovementType = MovementType.Stopped;
-                switchBehavior.Switch(entity, _rnd);
+                
+                switchBehavior?.Switch(entity, _rnd);
             }
         }
 
