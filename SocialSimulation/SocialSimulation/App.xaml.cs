@@ -1,4 +1,11 @@
 ﻿using SimpleInjector;
+using SocialSimulation.Collisions;
+using SocialSimulation.Entity;
+using SocialSimulation.Environment;
+using SocialSimulation.Interactions;
+using SocialSimulation.Movement;
+using SocialSimulation.SimulationParameters;
+using SocialSimulation.Views.Main;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -35,6 +42,7 @@ namespace SocialSimulation
             _container.Register<Logger>(Lifestyle.Singleton);
             _container.Register<CollisionService>(Lifestyle.Singleton);
             _container.Register<InteractionService>(Lifestyle.Singleton);
+            _container.Register<EnvironmentService>(Lifestyle.Singleton);
 
             var behaviors = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => !t.IsInterface && typeof(IEntityBehavior).IsAssignableFrom(t))

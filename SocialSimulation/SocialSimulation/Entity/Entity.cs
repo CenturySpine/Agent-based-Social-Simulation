@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SocialSimulation.Core;
+using SocialSimulation.Movement;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -46,6 +48,7 @@ namespace SocialSimulation.Entity
         public List<Goal> Goals { get; set; }
         public MovementType MovementType { get; set; }
         public Goal CurrentGoal { get; set; }
+
         public bool IsColliding
         {
             get => _isColliding;
@@ -68,9 +71,10 @@ namespace SocialSimulation.Entity
         {
             _storedMoveType = MovementType;
         }
+
         public void ResumeMovement()
         {
-            MovementType= _storedMoveType;
+            MovementType = _storedMoveType;
         }
     }
 }

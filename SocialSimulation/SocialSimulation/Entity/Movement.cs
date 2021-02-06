@@ -1,4 +1,7 @@
-﻿namespace SocialSimulation.Entity
+﻿using SocialSimulation.Core;
+using SocialSimulation.Movement;
+
+namespace SocialSimulation.Entity
 {
     public class Movement : NotifierBase
     {

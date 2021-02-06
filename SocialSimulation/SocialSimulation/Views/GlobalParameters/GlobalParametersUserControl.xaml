@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="SocialSimulation.Views.GlobalParameters.GlobalParametersUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:simulationParameters="clr-namespace:SocialSimulat
+
+             ion.SimulationParameters"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type simulationParameters:GlobalSimulationParameters}}"
+
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Grid.Column="0">
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="2">
+                    <TextBlock Text="SurfaceWidth Height" Margin="2" />
+                    <TextBox Margin="2" Text="{Binding SurfaceHeight,UpdateSourceTrigger=PropertyChanged}" />
+                </UniformGrid>
+                <Slider Minimum="10" Maximum="1000" Value="{Binding SurfaceHeight, Delay=1000}" TickFrequency="50" TickPlacement="Both" IsSnapToTickEnabled="True"></Slider>
+            </StackPanel>
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="2">
+                    <TextBlock Text="SurfaceWidth Width" Margin="2" />
+                    <TextBox Margin="2" Text="{Binding SurfaceWidth, UpdateSourceTrigger=PropertyChanged}" />
+                </UniformGrid>
+                <Slider Minimum="10" Maximum="1000" Value="{Binding SurfaceWidth, Delay=1000}" TickFrequency="50" TickPlacement="Both" IsSnapToTickEnabled="True"></Slider>
+            </StackPanel>
+
+            <UniformGrid Columns="2" Margin="2">
+                <TextBlock Text="Units number" Margin="2" />
+                <TextBox Margin="2" Text="{Binding UnitsNumber}" />
+            </UniformGrid>
+
+            <StackPanel>
+                <UniformGrid Rows="2" Margin="2">
+                    <TextBlock Text="Speed" Margin="2"></TextBlock>
+                    <TextBox Margin="2" Text="{Binding Speed,UpdateSourceTrigger=PropertyChanged}" />
+                </UniformGrid>
+                <Slider Minimum="{Binding MinSpeed}" Maximum="{Binding MaxSpeed}"
+                        Value="{Binding Speed, Delay=1000}" TickFrequency="0.01" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
+            </StackPanel>
+
+            <StackPanel>
+                <UniformGrid Rows="2" Margin="2">
+                    <TextBlock Text="Seconds to hour" Margin="2"></TextBlock>
+                    <TextBox Margin="2" Text="{Binding SecondsToHour,UpdateSourceTrigger=PropertyChanged}" />
+                </UniformGrid>
+
+                <Slider Minimum="1" Maximum="10"
+                    Value="{Binding SecondsToHour, Delay=1000}" TickFrequency="1" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
+            </StackPanel>
+            <StackPanel>
+                <UniformGrid Rows="2" Margin="2">
+                    <TextBlock Text="Audacity" Margin="2"></TextBlock>
+                    <TextBox Margin="2" Text="{Binding Audacity,UpdateSourceTrigger=PropertyChanged}" />
+                </UniformGrid>
+                <Slider Minimum="0" Maximum="1" Value="{Binding Audacity, Delay=1000}" TickFrequency="0.01" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
+            </StackPanel>
+
+            <StackPanel>
+                <UniformGrid Rows="2" Margin="2">
+                    <TextBlock Text="PersonalSpaceSize" Margin="2"></TextBlock>
+                    <TextBox Margin="2" Text="{Binding PersonalSpace,UpdateSourceTrigger=PropertyChanged}" />
+                </UniformGrid>
+                <Slider Minimum="5" Maximum="100" Value="{Binding PersonalSpace, Delay=1000}" TickFrequency="5" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Margin="2"></Slider>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

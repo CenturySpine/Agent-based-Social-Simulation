@@ -1,4 +1,6 @@
-﻿namespace SocialSimulation.Entity
+﻿using SocialSimulation.Core;
+
+namespace SocialSimulation.Entity
 {
     public class Social : NotifierBase
     {
@@ -11,13 +13,13 @@
         public float SocialLatencyThreshold
         {
             get => _socialLatencyThreshold;
-            set { _socialLatencyThreshold = value;OnPropertyChanged(); }
+            set { _socialLatencyThreshold = value; OnPropertyChanged(); }
         }
 
         public float CurrentSocialLatency
         {
             get => _currentSocialLatency;
-            set { _currentSocialLatency = value;OnPropertyChanged(); }
+            set { _currentSocialLatency = value; OnPropertyChanged(); }
         }
 
         public float SocialLatencyRecoveryRate { get; set; }

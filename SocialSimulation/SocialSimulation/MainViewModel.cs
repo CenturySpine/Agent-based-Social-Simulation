@@ -1,4 +1,11 @@
-﻿using System;
+﻿using SocialSimulation.Collisions;
+using SocialSimulation.Core;
+using SocialSimulation.Entity;
+using SocialSimulation.Environment;
+using SocialSimulation.Interactions;
+using SocialSimulation.Movement;
+using SocialSimulation.SimulationParameters;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,13 +14,13 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using SocialSimulation.Entity;
 
 namespace SocialSimulation
 {
     public class MainViewModel : NotifierBase
     {
         public GlobalSimulationParameters SimulationParams { get; }
+        public EnvironmentService Environment { get; }
         private readonly MovementService _movement;
         private readonly Logger _logger;
         private readonly CollisionService _collisions;
@@ -27,9 +34,10 @@ namespace SocialSimulation
         private Random _xRnd;
         private Random _yRnd;
 
-        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement, Logger logger, CollisionService collisions, InteractionService interactService)
+        public MainViewModel(GlobalSimulationParameters simulationParams, MovementService movement, Logger logger, CollisionService collisions, InteractionService interactService, EnvironmentService environment)
         {
             SimulationParams = simulationParams;
+            Environment = environment;
             _movement = movement;
             _logger = logger;
             _collisions = collisions;
@@ -137,7 +145,6 @@ namespace SocialSimulation
                         e.Movement.Direction = (StartDirection)_rnd.Next(0, 4);
                         e.Position = new Vector2(x, y);
 
-
                         e.Social.Charisma = (float)_rnd.NextDouble();
                         e.Social.NeedForSociability = (float)_rnd.NextDouble();
                         e.Social.SocialLatencyThreshold = _rnd.Next(20, 80);
@@ -146,7 +153,7 @@ namespace SocialSimulation
 
                         e.PersonalSpace.Size = SimulationParams.PersonalSpace;
                         MoveBehavior.UpdatePersonalSpace(e);
-                        
+
                         ets.Add(e);
                     }
 
@@ -161,8 +168,7 @@ namespace SocialSimulation
             _logger.Log($"Starting movement");
             _stopped = false;
             Entities.ForEach(e => e.State = EntityState.Moving);
-            _moveTimer = new Timer(OnUpdateEntities, null, 1000, 16);
-
+            _moveTimer = new Timer(OnUpdateEntities, null, 1000, (int)SimLoopData.Elapsed);
         }
 
         private void ExecuteStopMove(object o)
@@ -205,6 +211,7 @@ namespace SocialSimulation
                 {
                     entity.CollidingEntities.ForEach((e) => _interactService.Interact(entity, e, _rnd));
                 }
+                Environment.UpdateTime(SimLoopData.Elapsed);
             }
         }
 
@@ -219,7 +226,6 @@ namespace SocialSimulation
                     if (entity.CurrentGoal == null)
                     {
                         entity.CurrentGoal = addedGoal;
-
                     }
                     entity.MovementType = MovementType.TowardGoal;
                 }

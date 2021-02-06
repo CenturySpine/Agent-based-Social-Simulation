@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using SocialSimulation.Collisions;
+using SocialSimulation.Core;
+using System.Numerics;
 
 namespace SocialSimulation.Entity
 {

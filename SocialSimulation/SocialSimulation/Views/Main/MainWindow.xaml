@@ -1,0 +1,151 @@
+﻿<Window x:Class="SocialSimulation.Views.Main.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SocialSimulation"
+        xmlns:collisions="clr-namespace:SocialSimulation.Collisions"
+        xmlns:entity="clr-namespace:SocialSimulation.Entity"
+        xmlns:environment="clr-namespace:SocialSimulation.Views.Environment"
+        xmlns:globalParameters="clr-namespace:SocialSimulation.Views.GlobalParameters"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance {x:Type local:MainViewModel}}"
+        Title="MainWindow" Height="800" Width="900" MouseMove="MainWindow_OnMouseMove">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.3*" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="0.3*" />
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <environment:EnvironmentUserControl DataContext="{Binding Environment.ViewModel}" />
+
+                <Grid Grid.Row="1">
+                    <ItemsControl ItemsSource="{Binding Entities}"  BorderBrush="Black" BorderThickness="1" Background="Beige">
+                        <ItemsControl.Resources>
+                            <local:Vector2ToPointConverter x:Key="vtp" />
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas Background="LightGray" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp"
+                            Height="{Binding SimulationParams.SurfaceHeight}"
+                            Width="{Binding SimulationParams.SurfaceWidth}"
+                            IsItemsHost="True"
+                    ></Canvas>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="{x:Type ContentPresenter}">
+                                <Setter Property="Canvas.Top" Value="{Binding Position, Converter={StaticResource vtp},ConverterParameter='y'}" />
+                                <Setter Property="Canvas.Left" Value="{Binding Position,Converter={StaticResource vtp}, ConverterParameter='x'}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Canvas Width="10" Height="10" Background="Beige">
+                                    <Canvas.Style>
+                                        <Style TargetType="{x:Type Canvas}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="ToolTip" Value="{Binding Position}"></Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Canvas.Style>
+                                    <TextBlock Text="{Binding Id}" Canvas.Top="5" Canvas.Left="5" Margin="1,1" FontFamily="Courier New" FontSize="14" Foreground="Red" FontWeight="Bold"></TextBlock>
+                                    <Ellipse Width="10" Height="10" Fill="Black" Canvas.Top="0" Canvas.Left="0" />
+                                    <Border Canvas.Top="-30" Canvas.Left="-30" Background="White">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding State}" Value="{x:Static entity:EntityState.Talking}">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="blah"></TextBlock>
+                                    </Border>
+                                </Canvas>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ItemsControl ItemsSource="{Binding Entities}"  BorderBrush="Black" BorderThickness="1" Background="Transparent">
+                        <ItemsControl.Resources>
+                            <local:Vector2ToPointConverter x:Key="vtp" />
+                            <collisions:PersonalSpaceUnitToSurfaceConverter x:Key="psCv" />
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp"
+                                Height="{Binding SimulationParams.SurfaceHeight}"
+                                Width="{Binding SimulationParams.SurfaceWidth}"
+                                IsItemsHost="True"
+                        ></Canvas>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="{x:Type ContentPresenter}">
+                                <Setter Property="Canvas.Top" Value="{Binding PersonalSpace.Origin, Converter={StaticResource vtp},ConverterParameter='y'}" />
+                                <Setter Property="Canvas.Left" Value="{Binding PersonalSpace.Origin,Converter={StaticResource vtp}, ConverterParameter='x'}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="DarkOrange" BorderThickness="1" HorizontalAlignment="Stretch"
+                                Width="{Binding PersonalSpace.Size,Converter={StaticResource psCv}}"
+                                Height="{Binding PersonalSpace.Size, Converter={StaticResource psCv}}">
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="Background" Value="Transparent"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsColliding}" Value="true">
+                                                    <Setter Property="Background">
+                                                        <Setter.Value>
+                                                            <SolidColorBrush Color="Beige" Opacity="0.5"></SolidColorBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="{Binding Social.SocialLatencyThreshold}" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="10"></TextBlock>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Social.CurrentSocialLatency, StringFormat={}{0:#,#.0}}" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="10"></TextBlock>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Grid>
+            <ListBox Grid.Row="1" ItemsSource="{Binding Logs}" Margin="2" />
+        </Grid>
+        <StackPanel Grid.Column="0">
+            <globalParameters:GlobalParametersUserControl Grid.Column="0" DataContext="{Binding SimulationParams}" />
+            <Button Command="{Binding GenerateCommand}" Margin="2" Content="Generate" />
+            <Button Command="{Binding StartMoveCommand}" Margin="2" Content="Start move" />
+            <Button Command="{Binding StopMoveCommand}" Margin="2" Content="Stop move" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="SocialSimulation.Views.Environment.EnvironmentUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:environment="clr-namespace:SocialSimulation.Environment"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type environment:EnvironmentViewModel}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Height="40" Width="40" Margin="2" HorizontalAlignment="Left">
+            <Path Fill="Black" Stretch="Uniform">
+                <Path.Style>
+                    <Style TargetType="{x:Type Path}">
+                        <Setter Property="Data" Value="{Binding Source={StaticResource hours-12}, Path=Data}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="0">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-12}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="1">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-01}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="2">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-02}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="3">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-03}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="4">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-04}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="5">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-05}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="6">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-06}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="7">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-07}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="8">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-08}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="9">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-09}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="10">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-10}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="11">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-11}, Path=Data}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TimeOfDay}" Value="12">
+                                <Setter Property="Data" Value="{Binding Source={StaticResource hours-12}, Path=Data}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Path.Style>
+            </Path>
+        </Grid>
+    </Grid>
+</UserControl>

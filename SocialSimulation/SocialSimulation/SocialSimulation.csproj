@@ -62,39 +62,48 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AudacityBehavior.cs" />
-    <Compile Include="BoundBox.cs" />
-    <Compile Include="CollisionService.cs" />
+    <Compile Include="Entity\AudacityBehavior.cs" />
+    <Compile Include="Collisions\BoundBox.cs" />
+    <Compile Include="Collisions\CollisionService.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Entity\EntityState.cs" />
     <Compile Include="Entity\Movement.cs" />
     <Compile Include="Entity\PersonalSpace.cs" />
     <Compile Include="Entity\Social.cs" />
-    <Compile Include="EventArgs.cs" />
-    <Compile Include="EventRaiser.cs" />
-    <Compile Include="GlobalSimulationParameters.cs" />
-    <Compile Include="Goal.cs" />
-    <Compile Include="GoalNavigationBehavior.cs" />
-    <Compile Include="IDirectionInitiator.cs" />
-    <Compile Include="IDirectionSwitch.cs" />
-    <Compile Include="IEntityBehavior.cs" />
-    <Compile Include="IEntityInteractionBehavior.cs" />
-    <Compile Include="Interaction.cs" />
-    <Compile Include="InteractionBehavior.cs" />
-    <Compile Include="InteractionService.cs" />
-    <Compile Include="InteractionTerminatedEventHandler.cs" />
+    <Compile Include="Environment\EnvironmentService.cs" />
+    <Compile Include="Core\EventArgs.cs" />
+    <Compile Include="Core\EventRaiser.cs" />
+    <Compile Include="SimulationParameters\GlobalSimulationParameters.cs" />
+    <Compile Include="Entity\Goal.cs" />
+    <Compile Include="Entity\GoalNavigationBehavior.cs" />
+    <Compile Include="Movement\IDirectionInitiator.cs" />
+    <Compile Include="Movement\IDirectionSwitch.cs" />
+    <Compile Include="Entity\IEntityBehavior.cs" />
+    <Compile Include="Interactions\IEntityInteractionBehavior.cs" />
+    <Compile Include="Interactions\Interaction.cs" />
+    <Compile Include="Interactions\InteractionBehavior.cs" />
+    <Compile Include="Interactions\InteractionService.cs" />
+    <Compile Include="Interactions\InteractionTerminatedEventHandler.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="MoveBehavior.cs" />
-    <Compile Include="MoveData.cs" />
-    <Compile Include="MovementService.cs" />
-    <Compile Include="MovementType.cs" />
-    <Compile Include="PersonalSpaceUnitToSurfaceConverter.cs" />
-    <Compile Include="RelayCommand.cs" />
+    <Compile Include="Movement\MoveBehavior.cs" />
+    <Compile Include="Movement\MoveData.cs" />
+    <Compile Include="Movement\MovementService.cs" />
+    <Compile Include="Movement\MovementType.cs" />
+    <Compile Include="Collisions\PersonalSpaceUnitToSurfaceConverter.cs" />
+    <Compile Include="Core\RelayCommand.cs" />
     <Compile Include="SimLoopData.cs" />
-    <Compile Include="StartDirection.cs" />
-    <Compile Include="StraightNavigationBehavior.cs" />
+    <Compile Include="Movement\StartDirection.cs" />
+    <Compile Include="Movement\StraightNavigationBehavior.cs" />
     <Compile Include="Vector2ToPointConverter.cs" />
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\Environment\EnvironmentUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GlobalParameters\GlobalParametersUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Main\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -103,13 +112,23 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MainViewModel.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Views\Environment\EnvironmentUserControl.xaml.cs">
+      <DependentUpon>EnvironmentUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GlobalParameters\GlobalParametersUserControl.xaml.cs">
+      <DependentUpon>GlobalParametersUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Paths.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NotifierBase.cs" />
+    <Compile Include="Core\NotifierBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
