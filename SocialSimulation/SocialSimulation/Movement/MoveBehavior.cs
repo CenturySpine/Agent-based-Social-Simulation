@@ -156,16 +156,18 @@ namespace SocialSimulation.Movement
             {
                 X = entity.PersonalSpace.Origin.X,
                 Y = entity.PersonalSpace.Origin.Y,
-                Width = entity.PersonalSpace.Size * 2,
-                Height = entity.PersonalSpace.Size * 2,
+                Width = entity.PersonalSpace.Size,
+                Height = entity.PersonalSpace.Size,
             };
         }
 
         public static void UpdatePersonalSpace(Entity.Entity entity)
         {
-            var topleft = new Vector2(entity.Position.X + entity.SelfSize / 2 - (float)entity.PersonalSpace.Size, entity.Position.Y + entity.SelfSize / 2 - (float)entity.PersonalSpace.Size);
+            var origin = new Vector2(
+                entity.Position.X - (float)entity.PersonalSpace.Size / 2,
+                entity.Position.Y - (float)entity.PersonalSpace.Size / 2);
 
-            entity.PersonalSpace.Origin = topleft;
+            entity.PersonalSpace.Origin = origin;
         }
     }
 }

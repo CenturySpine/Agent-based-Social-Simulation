@@ -2,6 +2,8 @@
 using SocialSimulation.Collisions;
 using SocialSimulation.Entity;
 using SocialSimulation.Environment;
+using SocialSimulation.Game;
+using SocialSimulation.GameLoop;
 using SocialSimulation.Interactions;
 using SocialSimulation.Movement;
 using SocialSimulation.SimulationParameters;
@@ -28,6 +30,12 @@ namespace SocialSimulation
             App.Current.MainWindow.Show();
         }
 
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            _container.GetInstance<MainViewModel>().Unload();
+        }
+
         private void ConsoleLog(string obj)
         {
             Console.WriteLine(obj);
@@ -43,6 +51,9 @@ namespace SocialSimulation
             _container.Register<CollisionService>(Lifestyle.Singleton);
             _container.Register<InteractionService>(Lifestyle.Singleton);
             _container.Register<EnvironmentService>(Lifestyle.Singleton);
+            _container.Register<IGame, MyGame>(Lifestyle.Singleton);
+            _container.Register<IGameLoop, StandardTimerGameLoop>(Lifestyle.Singleton);
+            _container.Register<IGameSurface, CanvasGameSurface>(Lifestyle.Singleton);
 
             var behaviors = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => !t.IsInterface && typeof(IEntityBehavior).IsAssignableFrom(t))

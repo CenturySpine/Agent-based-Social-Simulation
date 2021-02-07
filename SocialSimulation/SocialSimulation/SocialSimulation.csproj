@@ -62,6 +62,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\UiRenderer.cs" />
     <Compile Include="Entity\AudacityBehavior.cs" />
     <Compile Include="Collisions\BoundBox.cs" />
     <Compile Include="Collisions\CollisionService.cs" />
@@ -73,6 +74,11 @@
     <Compile Include="Environment\EnvironmentService.cs" />
     <Compile Include="Core\EventArgs.cs" />
     <Compile Include="Core\EventRaiser.cs" />
+    <Compile Include="GameLoop\IGameLoop.cs" />
+    <Compile Include="GameLoop\StandardTimerGameLoop.cs" />
+    <Compile Include="Game\IGame.cs" />
+    <Compile Include="Game\IGameSurface.cs" />
+    <Compile Include="Game\MyGame.cs" />
     <Compile Include="SimulationParameters\GlobalSimulationParameters.cs" />
     <Compile Include="Entity\Goal.cs" />
     <Compile Include="Entity\GoalNavigationBehavior.cs" />

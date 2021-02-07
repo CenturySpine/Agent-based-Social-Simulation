@@ -4,13 +4,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocialSimulation"
-        xmlns:collisions="clr-namespace:SocialSimulation.Collisions"
-        xmlns:entity="clr-namespace:SocialSimulation.Entity"
         xmlns:environment="clr-namespace:SocialSimulation.Views.Environment"
         xmlns:globalParameters="clr-namespace:SocialSimulation.Views.GlobalParameters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance {x:Type local:MainViewModel}}"
-        Title="MainWindow" Height="800" Width="900" MouseMove="MainWindow_OnMouseMove">
+        Title="MainWindow" Height="800" Width="900">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.3*" />
@@ -30,7 +28,8 @@
                 <environment:EnvironmentUserControl DataContext="{Binding Environment.ViewModel}" />
 
                 <Grid Grid.Row="1">
-                    <ItemsControl ItemsSource="{Binding Entities}"  BorderBrush="Black" BorderThickness="1" Background="Beige">
+                    <ContentControl Content="{Binding Surface.Surface}" />
+                    <!--<ItemsControl ItemsSource="{Binding Entities}"  BorderBrush="Black" BorderThickness="1" Background="Beige">
                         <ItemsControl.Resources>
                             <local:Vector2ToPointConverter x:Key="vtp" />
                         </ItemsControl.Resources>
@@ -136,16 +135,18 @@
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    </ItemsControl>-->
                 </Grid>
             </Grid>
-            <ListBox Grid.Row="1" ItemsSource="{Binding Logs}" Margin="2" />
+            <ListBox Grid.Row="1"
+                     ItemsSource="{Binding Logs}" 
+                     Margin="2" Visibility="Collapsed"/>
         </Grid>
         <StackPanel Grid.Column="0">
-            <globalParameters:GlobalParametersUserControl Grid.Column="0" DataContext="{Binding SimulationParams}" />
-            <Button Command="{Binding GenerateCommand}" Margin="2" Content="Generate" />
-            <Button Command="{Binding StartMoveCommand}" Margin="2" Content="Start move" />
-            <Button Command="{Binding StopMoveCommand}" Margin="2" Content="Stop move" />
+            <globalParameters:GlobalParametersUserControl DataContext="{Binding SimulationParams}" />
+            <Button Command="{Binding GenerateCommand}" Margin="2" Content="Load" />
+            <Button Command="{Binding StartMoveCommand}" Margin="2" Content="Start" />
+            <Button Command="{Binding StopMoveCommand}" Margin="2" Content="Stop" />
         </StackPanel>
     </Grid>
 </Window>
