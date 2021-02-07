@@ -74,6 +74,8 @@
     <Compile Include="Environment\EnvironmentService.cs" />
     <Compile Include="Core\EventArgs.cs" />
     <Compile Include="Core\EventRaiser.cs" />
+    <Compile Include="GameLoop\CompositionTargetLoop.cs" />
+    <Compile Include="GameLoop\CustomGameLoop.cs" />
     <Compile Include="GameLoop\IGameLoop.cs" />
     <Compile Include="GameLoop\StandardTimerGameLoop.cs" />
     <Compile Include="Game\IGame.cs" />

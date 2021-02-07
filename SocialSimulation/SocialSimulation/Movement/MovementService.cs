@@ -30,11 +30,11 @@ namespace SocialSimulation.Movement
             };
         }
 
-        public void Update(Entity.Entity entity)
+        public void Update(Entity.Entity entity, float elapsed)
         {
             foreach (var entityBehavior in _behaviors.Select(b => b()))
             {
-                entityBehavior.Behave(entity, _simParams, _rnd);
+                entityBehavior.Behave(entity, _simParams, _rnd, elapsed);
             }
         }
     }

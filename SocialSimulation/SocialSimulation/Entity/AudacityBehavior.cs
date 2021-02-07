@@ -13,7 +13,7 @@ namespace SocialSimulation.Entity
             _logger = logger;
         }
 
-        public void Behave(SocialSimulation.Entity.Entity entity, GlobalSimulationParameters simulationParams, Random random)
+        public void Behave(Entity entity, GlobalSimulationParameters simulationParams, Random random, float elapsed)
         {
             var audacityInfluence = random.NextDouble() < entity.Audacity;
 

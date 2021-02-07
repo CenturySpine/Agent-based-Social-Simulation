@@ -52,7 +52,13 @@ namespace SocialSimulation
             _container.Register<InteractionService>(Lifestyle.Singleton);
             _container.Register<EnvironmentService>(Lifestyle.Singleton);
             _container.Register<IGame, MyGame>(Lifestyle.Singleton);
-            _container.Register<IGameLoop, StandardTimerGameLoop>(Lifestyle.Singleton);
+
+            //_container.Register<IGameLoop, StandardTimerGameLoop>(Lifestyle.Singleton);
+            //_container.Register<IGameLoop, CompositionTargetLoop>(Lifestyle.Singleton);
+            _container.Register<IGameLoop, CustomGameLoop>(Lifestyle.Singleton);
+            
+
+
             _container.Register<IGameSurface, CanvasGameSurface>(Lifestyle.Singleton);
 
             var behaviors = Assembly.GetExecutingAssembly().GetTypes()

@@ -68,7 +68,7 @@ namespace SocialSimulation.Interactions
             _logger.Log($"Entity {i.Entity1.Id} & Entity {i.Entity2.Id} stopped interacting");
         }
 
-        public void UpdateSocialLatency(Entity.Entity entity)
+        public void UpdateSocialLatency(Entity.Entity entity, float elapsed)
         {
             //social latency recovers while threshold is not reached and if entity is not interacting
             if (entity.State != EntityState.Talking &&
@@ -76,7 +76,7 @@ namespace SocialSimulation.Interactions
             {
                 entity.Social.CurrentSocialLatency +=
                                                       entity.Social.SocialLatencyRecoveryRate *
-                                                      SimLoopData.Elapsed;
+                                                      elapsed;
 
                 //log end of social latency recovery
                 if (entity.Social.CurrentSocialLatency >= entity.Social.SocialLatencyThreshold)

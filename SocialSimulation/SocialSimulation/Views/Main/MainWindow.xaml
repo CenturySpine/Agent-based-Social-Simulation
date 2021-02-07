@@ -15,12 +15,12 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" ShowGridLines="True">
             <Grid.RowDefinitions>
                 <RowDefinition />
-                <RowDefinition Height="0.3*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid>
+            <Grid ShowGridLines="True">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -28,7 +28,7 @@
                 <environment:EnvironmentUserControl DataContext="{Binding Environment.ViewModel}" />
 
                 <Grid Grid.Row="1">
-                    <ContentControl Content="{Binding Surface.Surface}" />
+                    <ContentControl Content="{Binding Surface.Surface}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <!--<ItemsControl ItemsSource="{Binding Entities}"  BorderBrush="Black" BorderThickness="1" Background="Beige">
                         <ItemsControl.Resources>
                             <local:Vector2ToPointConverter x:Key="vtp" />

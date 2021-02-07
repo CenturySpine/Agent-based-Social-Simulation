@@ -17,7 +17,8 @@ namespace SocialSimulation.Movement
             _logger = logger;
         }
 
-        public void Behave(Entity.Entity entity, GlobalSimulationParameters simulationParams, Random random)
+        public void Behave(Entity.Entity entity, GlobalSimulationParameters simulationParams, Random random,
+            float elapsed)
         {
             if (entity.State == EntityState.Moving)
             {
@@ -56,7 +57,7 @@ namespace SocialSimulation.Movement
                     }
                 }
 
-                Move(entity);
+                Move(entity, elapsed);
             }
         }
 
@@ -97,13 +98,13 @@ namespace SocialSimulation.Movement
             }
         }
 
-        private void Move(Entity.Entity entity)
+        private void Move(Entity.Entity entity, float elapsed)
         {
             MoveData data = entity.Movement.CurrentMoveData;
 
             entity.Position += data.Dir //direction
                                * (float)entity.Movement.Speed //entity speed
-                               * SimLoopData.Elapsed; //refresh frequency
+                               * elapsed; //refresh frequency
 
             if (float.IsNaN(entity.Position.X) || float.IsNaN(entity.Position.Y))
             {

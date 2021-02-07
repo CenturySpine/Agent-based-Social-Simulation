@@ -162,8 +162,8 @@ namespace SocialSimulation.Game
                 var copy = Entities.ToList();
                 foreach (var e in Entities)
                 {
-                    _movement.Update(e);
-                    _interactService.UpdateSocialLatency(e);
+                    _movement.Update(e, elapsed);
+                    _interactService.UpdateSocialLatency(e, elapsed);
 
                 }
                 //Parallel.ForEach(Entities, e =>
@@ -172,7 +172,7 @@ namespace SocialSimulation.Game
 
                 foreach (var entity in Entities)
                 {
-                    _collisions.ComputeCollision(entity, copy);
+                    _collisions.ComputeCollision(entity, copy, elapsed);
                 }
 
                 foreach (var entity in Entities.Where(e => e.CollidingEntities.Any()))

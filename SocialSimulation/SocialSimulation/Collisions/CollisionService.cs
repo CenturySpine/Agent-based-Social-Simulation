@@ -5,7 +5,7 @@ namespace SocialSimulation.Collisions
 {
     public class CollisionService
     {
-        public void ComputeCollision(Entity.Entity entity, List<Entity.Entity> copy)
+        public void ComputeCollision(Entity.Entity entity, List<Entity.Entity> copy, float elapsed)
         {
             var collidingOthers =
                 copy.Where(c => c != entity)
