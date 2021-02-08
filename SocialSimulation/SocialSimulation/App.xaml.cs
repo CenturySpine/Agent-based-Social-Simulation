@@ -24,7 +24,7 @@ namespace SocialSimulation
             base.OnStartup(e);
             Register();
 
-            _container.GetInstance<Logger>().RegisterListener(ConsoleLog);
+            //_container.GetInstance<Logger>().RegisterListener(ConsoleLog);
 
             App.Current.MainWindow = _container.GetInstance<MainWindow>();
             App.Current.MainWindow.Show();
@@ -53,10 +53,10 @@ namespace SocialSimulation
             _container.Register<EnvironmentService>(Lifestyle.Singleton);
             _container.Register<IGame, MyGame>(Lifestyle.Singleton);
 
-            //_container.Register<IGameLoop, StandardTimerGameLoop>(Lifestyle.Singleton);
+            _container.Register<IGameLoop, StandardTimerGameLoop>(Lifestyle.Singleton);
             //_container.Register<IGameLoop, CompositionTargetLoop>(Lifestyle.Singleton);
-            _container.Register<IGameLoop, CustomGameLoop>(Lifestyle.Singleton);
-            
+            //_container.Register<IGameLoop, CustomGameLoop>(Lifestyle.Singleton);
+
 
 
             _container.Register<IGameSurface, CanvasGameSurface>(Lifestyle.Singleton);

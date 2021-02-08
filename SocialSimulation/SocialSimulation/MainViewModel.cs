@@ -65,7 +65,7 @@ namespace SocialSimulation
             {
                 _game.Load();
                 Surface.Update();
-                _game.Render(SimLoopData.Elapsed);
+                _game.Render(1.0f);
                 _logger.Log($"Generation completed");
             });
         }

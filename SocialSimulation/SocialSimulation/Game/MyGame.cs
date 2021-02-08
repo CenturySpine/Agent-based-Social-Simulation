@@ -184,10 +184,10 @@ namespace SocialSimulation.Game
 
         public void Render(float elapsed)
         {
-            RenderEntities();
+            RenderEntities(elapsed);
         }
 
-        private void RenderEntities()
+        private void RenderEntities(float elapsed)
         {
             UiRenderer.Render(() =>
             {
@@ -200,26 +200,26 @@ namespace SocialSimulation.Game
                         {
                             renderData = new EntityRender();
                             _entityRenderCache[entity.Id] = renderData;
-                            RenderEntity(entity, renderData);
+                            RenderEntity(entity, renderData, elapsed);
                         }
                         else
                         {
-                            UpdateEntitySprites(entity, renderData);
+                            UpdateEntitySprites(entity, renderData, elapsed);
                         }
                     }
                 }
             });
         }
 
-        private void UpdateEntitySprites(Entity.Entity entity, EntityRender renderData)
+        private void UpdateEntitySprites(Entity.Entity entity, EntityRender renderData, float elapsed)
         {
-            Canvas.SetTop(renderData.Entity, entity.Position.Y - (float)entity.SelfSize / 2);
-            Canvas.SetLeft(renderData.Entity, entity.Position.X - (float)entity.SelfSize / 2);
+            Canvas.SetTop(renderData.Entity, entity.Position.Y * elapsed - (float)entity.SelfSize / 2);
+            Canvas.SetLeft(renderData.Entity, entity.Position.X * elapsed - (float)entity.SelfSize / 2);
             renderData.Entity.Height = entity.SelfSize;
             renderData.Entity.Width = entity.SelfSize;
 
-            Canvas.SetTop(renderData.PersonalSpace, entity.PersonalSpace.Origin.Y);
-            Canvas.SetLeft(renderData.PersonalSpace, entity.PersonalSpace.Origin.X);
+            Canvas.SetTop(renderData.PersonalSpace, entity.PersonalSpace.Origin.Y * elapsed);
+            Canvas.SetLeft(renderData.PersonalSpace, entity.PersonalSpace.Origin.X * elapsed);
             renderData.PersonalSpace.Background = EntityRenderResources.StateToBrush[entity.State];
             renderData.PersonalSpace.Width = entity.PersonalSpace.Size;
             renderData.PersonalSpace.Height = entity.PersonalSpace.Size;
@@ -229,20 +229,20 @@ namespace SocialSimulation.Game
 
         private Dictionary<int, EntityRender> _entityRenderCache = new Dictionary<int, EntityRender>();
 
-        private void RenderEntity(Entity.Entity entity, EntityRender entityRender)
+        private void RenderEntity(Entity.Entity entity, EntityRender entityRender, float elapsed)
         {
             //order is important here : latest visuals added are displayed on foreground
-            RenderPersonalSpace(entity, entityRender);
+            RenderPersonalSpace(entity, entityRender, elapsed);
 
             Ellipse entitySprite = new Ellipse { Height = entity.SelfSize, Width = entity.SelfSize, Fill = EntityRenderResources.EntityBrush, Tag = SpriteType.Entity };
             _surface.Surface.Children.Add(entitySprite);
-            Canvas.SetTop(entitySprite, entity.Position.Y - (float)entity.SelfSize / 2);
-            Canvas.SetLeft(entitySprite, entity.Position.X - (float)entity.SelfSize / 2);
+            Canvas.SetTop(entitySprite, entity.Position.Y * elapsed - (float)entity.SelfSize / 2);
+            Canvas.SetLeft(entitySprite, entity.Position.X * elapsed - (float)entity.SelfSize / 2);
             entityRender.Entity = entitySprite;
 
         }
 
-        private void RenderPersonalSpace(Entity.Entity entity, EntityRender entityRender)
+        private void RenderPersonalSpace(Entity.Entity entity, EntityRender entityRender, float elapsed)
         {
             Border personalSpaceSprite = new Border
             {
@@ -255,8 +255,8 @@ namespace SocialSimulation.Game
             };
             _surface.Surface.Children.Add(personalSpaceSprite);
 
-            Canvas.SetTop(personalSpaceSprite, entity.PersonalSpace.Origin.Y);
-            Canvas.SetLeft(personalSpaceSprite, entity.PersonalSpace.Origin.X);
+            Canvas.SetTop(personalSpaceSprite, entity.PersonalSpace.Origin.Y* elapsed);
+            Canvas.SetLeft(personalSpaceSprite, entity.PersonalSpace.Origin.X* elapsed);
             entityRender.PersonalSpace = personalSpaceSprite;
         }
 

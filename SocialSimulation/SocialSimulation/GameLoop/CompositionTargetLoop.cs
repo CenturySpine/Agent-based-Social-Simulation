@@ -21,7 +21,7 @@ namespace SocialSimulation.GameLoop
             var ellapsed = DateTime.Now.Subtract(_currentTime);
             _game.Input();
             _game.Update((float)ellapsed.TotalMilliseconds);
-            _game.Render(SimLoopData.Elapsed);
+            _game.Render(SimLoopData.DesiredElapsed);
             _currentTime = DateTime.Now;
 
         }

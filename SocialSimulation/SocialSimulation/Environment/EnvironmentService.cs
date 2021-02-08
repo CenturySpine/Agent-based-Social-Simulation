@@ -20,7 +20,7 @@ namespace SocialSimulation.Environment
             _passed += elapsed;
             int hour = (int)Math.Round(_passed / (_simParams.SecondsToHour * 1000));
             ViewModel.TimeOfDay = hour;
-            if (hour == 12)
+            if (hour >= 12)
                 _passed = 0;
         }
 

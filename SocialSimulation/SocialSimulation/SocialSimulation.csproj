@@ -77,7 +77,14 @@
     <Compile Include="GameLoop\CompositionTargetLoop.cs" />
     <Compile Include="GameLoop\CustomGameLoop.cs" />
     <Compile Include="GameLoop\IGameLoop.cs" />
+    <Compile Include="GameLoop\Impl\AnotherLoop.cs" />
+    <Compile Include="GameLoop\Impl\AppIdleLoop.cs" />
+    <Compile Include="GameLoop\Impl\Step03BLoop.cs" />
+    <Compile Include="GameLoop\Impl\ICustomLoopBehavior.cs" />
     <Compile Include="GameLoop\StandardTimerGameLoop.cs" />
+    <Compile Include="GameLoop\Impl\Step01Loop.cs" />
+    <Compile Include="GameLoop\Impl\Step02Loop.cs" />
+    <Compile Include="GameLoop\Impl\Step03Loop.cs" />
     <Compile Include="Game\IGame.cs" />
     <Compile Include="Game\IGameSurface.cs" />
     <Compile Include="Game\MyGame.cs" />
